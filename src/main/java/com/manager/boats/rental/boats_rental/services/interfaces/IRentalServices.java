@@ -10,5 +10,5 @@ public interface IRentalServices {
     Rental getByUserId(Long id);
     void save(RentalDto rental,Long userId,Long boatId);
     void delete(Long id);
-    void updateProduct(Rental rental, Long id);
+    void updateProduct(RentalDto rental, Long id);
 }

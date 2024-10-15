@@ -9,12 +9,14 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 
+
+
 @Target(ElementType.FIELD)
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExistsMarinDb.class)
+@Constraint(validatedBy = ExistsUserDb.class)
+public @interface IExistsUserByEmail{
 
-public @interface IExistsMarinDb{
-    String message() default "Dni Already exists in Db";
+    String message() default "Email already exists in Db";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

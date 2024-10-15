@@ -1,8 +1,17 @@
 package com.manager.boats.rental.boats_rental.web.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+
 public class RentalDto {
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message="Format date invalid, yyyy-MM-dd")
     private String dateInit;
+    @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message="Format date invalid, yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private String dateEnd;
+    @Min(1)
     private Long hours;
     public RentalDto() {
     }

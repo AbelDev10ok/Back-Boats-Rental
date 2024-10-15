@@ -46,7 +46,7 @@ public class RentalServices implements IRentalServices{
     @Transactional(readOnly = true)
     @Override
     public Rental getByUserId(Long id) {
-        return rentalRepository.findByUserId(id).get();
+        return rentalRepository.findByUserId(id).orElseThrow(()-> new NotFoundException("User not exists"));
     }
 
     @Transactional
@@ -78,19 +78,31 @@ public class RentalServices implements IRentalServices{
 
     @Transactional
     @Override
-    public void updateProduct(Rental rental, Long id) {
-        Optional<Rental> rentalOptional = rentalRepository.findByUserId(id);        
-        if(rentalOptional.isPresent()){
-            Rental existingRental = rentalOptional.get();
-            existingRental.setDateInit(rental.getDateInit());
-            existingRental.setDateEnd(rental.getDateEnd());
-            existingRental.setState(rental.getState());
-            existingRental.setHours(rental.getHours());
-            existingRental.setTotalHours(rental.getTotalHours());
-            rentalRepository.save(existingRental);
-        }else{
-            throw new NotFoundException("Rental not found");
+    public void updateProduct(RentalDto rentalDto, Long id) {
+        Optional<Rental> rentalOptional = rentalRepository.findByUserId(id);    
+        
+        SimpleDateFormat stdDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String dateInit = rentalDto.getDateInit();
+        String dateEnd = rentalDto.getDateEnd();
+        
+        try {
+            Date dnInit = stdDateFormat.parse(dateInit);
+            Date dnEnd = stdDateFormat.parse(dateEnd);
+
+            if(rentalOptional.isPresent()){
+                Rental existingRental = rentalOptional.get();
+                existingRental.setDateInit(dnInit);
+                existingRental.setDateEnd(dnEnd);
+                existingRental.setHours(rentalDto.getHours());
+                rentalRepository.save(existingRental);
+            }else{
+                throw new NotFoundException("Rental not found");
+            }
+
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+    
     }
     
 }

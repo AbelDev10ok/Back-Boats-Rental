@@ -7,5 +7,5 @@ import com.manager.boats.rental.boats_rental.persistence.models.Users;
 
 @Repository
 public interface IUserRepository extends JpaRepository<Users,Long> {
-
+    boolean existsByEmail(String email);
 }

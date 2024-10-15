@@ -12,6 +12,8 @@ import com.manager.boats.rental.boats_rental.persistence.models.Users;
 import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 import com.manager.boats.rental.boats_rental.services.interfaces.IUserServices;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserDto;
+import com.manager.boats.rental.boats_rental.web.controller.dto.UserResponse;
+
 
 @Service
 public class UserService implements IUserServices{
@@ -21,8 +23,16 @@ public class UserService implements IUserServices{
 
     @Transactional(readOnly=true)
     @Override
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll().stream()
+            .map(user -> 
+            new UserResponse(
+            user.getName(), 
+            user.getLastname(), 
+            user.getEmail(), 
+            user.getPhoneNumber(), 
+            user.getAddres()))
+            .toList();
         
     }
     
@@ -67,4 +77,10 @@ public class UserService implements IUserServices{
         }
         
     }
+    @Override
+    public boolean existsUser(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    
 }

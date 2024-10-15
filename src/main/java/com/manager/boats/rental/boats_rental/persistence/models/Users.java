@@ -13,6 +13,7 @@ import jakarta.validation.constraints.Size;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.manager.boats.rental.boats_rental.services.exception.IExistsUserByEmail;
 
 import java.util.HashSet;
 
@@ -23,14 +24,9 @@ public class Users{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank(message = "name is requeride")
     private String name;
-    @NotBlank(message = "lastname is required")
     private String lastname;
-    @NotBlank(message = "email is required")
     private String email;
-    @NotBlank(message = "email is required")
-    @Size(min = 8,max = 20)
     private String password;
     @Column(name = "phone_number")
     private String phoneNumber;
