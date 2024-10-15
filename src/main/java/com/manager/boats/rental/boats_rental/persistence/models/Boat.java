@@ -1,25 +1,45 @@
 package com.manager.boats.rental.boats_rental.persistence.models;
 
+import org.hibernate.validator.constraints.UniqueElements;
+
+import com.manager.boats.rental.boats_rental.services.exception.IExsitsBoatDb;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
+
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table
 public class Boat {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @NotNull(message = "Tuition is required")
+    @IExsitsBoatDb
     private Long tuition;
+
+    @NotBlank(message = "Type is required")
     private String type;
+    
+    @NotNull(message = "Ability is required")
     private Long ability;
+
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Model is required")
     private String model;
+    
+    @NotBlank(message = "State is required")    
     private String state;
+    
+    @NotNull(message = "Price hours is required")
+    @Min(value = 1, message = "Price hours must be greater than 0")
     @Column(name="price_hours")
     private Long priceHours;
     
@@ -32,7 +52,8 @@ public class Boat {
     public Boat() {
     }
     
-    public Boat(String type, Long ability, String name, String model, String state, Long priceHours) {
+    public Boat(Long tuition,String type, Long ability, String name, String model, String state, Long priceHours) {
+        this.tuition = tuition;
         this.type = type;
         this.ability = ability;
         this.name = name;
@@ -80,7 +101,7 @@ public class Boat {
 
     public Long getPriceHours() {
         return priceHours;
-    }
+    }  
     public void setPriceHours(Long priceHours) {
         this.priceHours = priceHours;
     }

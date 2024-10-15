@@ -1,25 +1,25 @@
 package com.manager.boats.rental.boats_rental.web.controller.dto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-
 public class BoatDto {
+    private Long tuition;
     private String type;
     private Long ability;
     private String name;
     private String model;
+    private Long priceHours;
     
     
     
     public BoatDto() {
     }
     
-    public BoatDto(String type, Long ability, String name, String model) {
+    public BoatDto(Long tuition,String type, Long ability, String name, String model,Long priceHours) {
+        this.tuition = tuition;
         this.type = type;
         this.ability = ability;
         this.name = name;
         this.model = model;
+        this.priceHours = priceHours;
     }
 
     public String getType() {
@@ -45,6 +45,22 @@ public class BoatDto {
     }
     public void setModel(String model) {
         this.model = model;
+    }
+
+    public Long getTuition() {
+        return tuition;
+    }
+
+    public void setTuition(Long tuition) {
+        this.tuition = tuition;
+    }
+
+    public Long getPriceHours() {
+        return priceHours;
+    }
+
+    public void setPriceHours(Long priceHours) {
+        this.priceHours = priceHours;
     }
     
 }

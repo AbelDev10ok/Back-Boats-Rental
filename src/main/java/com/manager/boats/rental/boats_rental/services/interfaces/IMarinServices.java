@@ -10,4 +10,5 @@ public interface IMarinServices {
     void saveMarin(Marin marin);
     void deleteMarinById(Long id);
     void updateMarin(Marin marin,Long id);
+    boolean existsMarin(String dni);
 }

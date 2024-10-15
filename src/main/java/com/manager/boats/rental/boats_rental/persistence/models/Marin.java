@@ -6,9 +6,14 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.manager.boats.rental.boats_rental.services.exception.IExistsMarinDb;
 
 @Entity
 @Table
@@ -17,8 +22,16 @@ public class Marin {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotBlank(message = "Name is required")
+    @Size(min = 3,max = 15)
     private String name;
+    @NotBlank(message = "Lastname is required")
+    @Size(min=4,max = 20)
     private String lastname;
+    @NotBlank(message = "Name is required")
+    @Size(min = 8,max = 8)
+    @IExistsMarinDb(message = "Dni already exists")
+    private String dni;
     
     @OneToMany(mappedBy = "marin")
     // one marin have many boats
@@ -29,10 +42,11 @@ public class Marin {
     }
 
     
-    public Marin(Long id, String name, String lastname) {
+    public Marin(Long id, String name, String lastname, String dni) {
         this.id = id;
         this.name = name;
         this.lastname = lastname;
+        this.dni = dni;
         this.boats = new ArrayList<>();
     }
 
@@ -54,6 +68,25 @@ public class Marin {
     }
     public void setLastname(String lastname) {
         this.lastname = lastname;
+    }
+
+
+    public String getDni() {
+        return dni;
+    }
+
+
+    public void setDni(String dni) {
+        this.dni = dni;
+    }
+
+    public List<Boat> getBoats() {
+        return boats;
+    }
+
+
+    public void setBoats(List<Boat> boats) {
+        this.boats = boats;
     }
 
     

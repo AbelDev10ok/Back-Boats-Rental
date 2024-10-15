@@ -10,5 +10,6 @@ import java.util.Optional;
 
 @Repository
 public interface IBoatRepository extends JpaRepository<Boat,Long>{
-    List findAll();
+    List<Boat> findAll();
+    boolean existsById(Long id);
 }

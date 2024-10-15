@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Users;
 import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
@@ -18,16 +19,20 @@ public class UserService implements IUserServices{
     @Autowired
     private IUserRepository userRepository;
 
-
+    @Transactional(readOnly=true)
     @Override
     public List<Users> getAllUsers() {
         return userRepository.findAll();
         
     }
+    
+    @Transactional(readOnly=true)
     @Override
     public Users getUsersById(Long id) {
         return userRepository.findById(id).get();
     }
+
+    @Transactional
     @Override
     public void saveUser(UserDto userDto) {
         Users user = new Users();
@@ -39,10 +44,12 @@ public class UserService implements IUserServices{
         user.setAddres(userDto.getAddres());
         userRepository.save(user);
     }
+    @Transactional
     @Override
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
+    @Transactional(readOnly=true)
     @Override
     public void updateUser(UserDto usersdto, Long id) {
         Optional<Users> usersOptional = userRepository.findById(id);

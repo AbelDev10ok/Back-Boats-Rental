@@ -52,6 +52,8 @@ public class RentalServices implements IRentalServices{
     @Transactional
     @Override
     public void save(RentalDto rentalDto,Long userId,Long boatId) {
+        Users  user = userRepository.findById(userId).orElseThrow(() -> new NotFoundException("User not found"));
+        Boat boat = boatRepository.findById(boatId).orElseThrow(() -> new NotFoundException("Boat not found"));;
 
         SimpleDateFormat stdDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         String dateInit = rentalDto.getDateInit();
@@ -66,13 +68,11 @@ public class RentalServices implements IRentalServices{
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        Optional<Users> user = userRepository.findById(userId);
-        Optional<Boat> boat = boatRepository.findById(boatId);
-        rental.setBoat(boat.get());
+        rental.setBoat(boat);
         rental.setHours(rentalDto.getHours());
-        rental.setState("pendiente");
-        rental.setTotalHours(boat.get().getPriceHours()*rentalDto.getHours());
-        rental.setUser(user.get());
+        rental.setState("pendiente"); 
+        rental.setTotalHours(boat.getPriceHours()*rentalDto.getHours());
+        rental.setUser(user);
         rentalRepository.save(rental);        
     }
 

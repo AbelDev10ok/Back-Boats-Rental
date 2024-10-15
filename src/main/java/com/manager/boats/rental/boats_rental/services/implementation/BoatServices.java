@@ -5,7 +5,6 @@ import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.jaxb.SpringDataJaxb.OrderDto;
 import org.springframework.stereotype.Service;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
@@ -24,9 +23,10 @@ public class BoatServices implements IBoatServices{
     @Autowired
     private ModelMapper modelMapper;
 
+    @Transactional
     @Override
     public void delete(Long id) {
-        Optional boatOptional = boatRepository.findById(id);
+        Optional<Boat> boatOptional = boatRepository.findById(id);
         if(boatOptional.isPresent()){
             boatRepository.deleteById(id);
         }else{
@@ -35,6 +35,7 @@ public class BoatServices implements IBoatServices{
         
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<Boat> getAll() {
         List<Boat> boats = boatRepository.findAll();
@@ -44,6 +45,7 @@ public class BoatServices implements IBoatServices{
         return null;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public Boat getById(Long id) {
         Optional<Boat> boat = boatRepository.findById(id);
@@ -57,13 +59,21 @@ public class BoatServices implements IBoatServices{
 
     @Transactional
     @Override
-    public void save(Boat boat) {
+    public void save(BoatDto boatDto) {
+        Boat boat = new Boat();
+        boat.setAbility(boatDto.getAbility());
+        boat.setModel(boatDto.getModel());
+        boat.setName(boatDto.getName());
+        boat.setType(boatDto.getType());
+        boat.setTuition(boatDto.getTuition());
+        boat.setState("aviable");
+        boat.setPriceHours(boatDto.getPriceHours());
         boatRepository.save(boat);
     }
     
-
+    @Transactional
     @Override
-    public void updateProduct(Boat boat, Long id) {
+    public void updateProduct(BoatDto boat, Long id) {
             Optional<Boat> existingBoatOptional = boatRepository.findById(id);
         
             if (existingBoatOptional.isPresent()) {
@@ -78,6 +88,14 @@ public class BoatServices implements IBoatServices{
                 // Handle the case where the boat is not found
                 throw new NotFoundException("Boat with ID " + id + " not found.");
             }
+    }
+    
+
+    @Transactional(readOnly = true)
+    @Override
+    public boolean existsByTuition(Long tuition) {
+        System.out.println(tuition);
+        return boatRepository.existsById(tuition);
     }
 
     //mapp Boat to BoatDto

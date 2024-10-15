@@ -7,5 +7,5 @@ import com.manager.boats.rental.boats_rental.persistence.models.Marin;
 
 @Repository
 public interface IMarinRepository extends JpaRepository<Marin,Long>{
-
+    boolean existsByDni(String dni);
 }
