@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.manager.back.boats.rental</groupId>
-	<artifactId>back-boats-rental</artifactId>
+	<artifactId>boats-rental</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>boats-rental</name>
 	<description>Demo project for Spring Boot</description>
