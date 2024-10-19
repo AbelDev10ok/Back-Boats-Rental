@@ -2,11 +2,14 @@ package com.manager.boats.rental.boats_rental.persistence.models;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import java.util.Date;
 
@@ -20,7 +23,8 @@ public class Rental {
     private Date dateInit;
     @Column(name="date_end")
     private Date dateEnd;
-    private String state;//pend,conf,canc
+    @Enumerated(EnumType.STRING)
+    private EstateRental state;//pend,conf,canc
     private Long hours;
     @Column(name="total_hours")
     private Long total;
@@ -37,12 +41,17 @@ public class Rental {
     }
 
 
-    public Rental(Date dateInit, Date dateEnd, String state, Long hours, Long total) {
+    public Rental(Date dateInit, Date dateEnd, EstateRental state, Long hours, Long total) {
         this.dateInit = dateInit;
         this.dateEnd = dateEnd;
         this.state = state;
         this.hours = hours;
         this.total = total;
+    }
+
+    @PrePersist
+    private void totalRent(){
+        this.total = this.boat.getPriceHours() * hours;
     }
 
 
@@ -62,11 +71,11 @@ public class Rental {
         this.dateEnd = dateEnd;
     }
 
-    public String getState() {
+    public EstateRental getState() {
         return state;
     }
 
-    public void setState(String state) {
+    public void setState(EstateRental state) {
         this.state = state;
     }
 

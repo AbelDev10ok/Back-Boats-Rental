@@ -2,6 +2,8 @@ package com.manager.boats.rental.boats_rental.persistence.models;
 
 import org.hibernate.validator.constraints.UniqueElements;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.manager.boats.rental.boats_rental.services.exception.IExsitsBoatDb;
 
 import jakarta.persistence.Column;
@@ -44,6 +46,7 @@ public class Boat {
     private Long priceHours;
     
     //the boats have one marin
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "marin_id")//fk
     private Marin marin;
@@ -106,6 +109,14 @@ public class Boat {
         this.priceHours = priceHours;
     }
 
+    public Marin getMarin() {
+        return marin;
+    }
+
+    public void setMarin(Marin marin) {
+        this.marin = marin;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -148,6 +159,4 @@ public class Boat {
             return false;
         return true;
     }
-
-
 }

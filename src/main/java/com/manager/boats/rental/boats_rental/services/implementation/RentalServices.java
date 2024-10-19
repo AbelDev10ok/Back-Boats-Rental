@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
+import com.manager.boats.rental.boats_rental.persistence.models.EstateRental;
 import com.manager.boats.rental.boats_rental.persistence.models.Rental;
 import com.manager.boats.rental.boats_rental.persistence.models.Users;
 import com.manager.boats.rental.boats_rental.repositories.IBoatRepository;
@@ -70,8 +71,8 @@ public class RentalServices implements IRentalServices{
         }
         rental.setBoat(boat);
         rental.setHours(rentalDto.getHours());
-        rental.setState("pendiente"); 
-        rental.setTotalHours(boat.getPriceHours()*rentalDto.getHours());
+        rental.setState(EstateRental.PENDIENTE); 
+        // rental.setTotalHours(boat.getPriceHours()*rentalDto.getHours());
         rental.setUser(user);
         rentalRepository.save(rental);        
     }

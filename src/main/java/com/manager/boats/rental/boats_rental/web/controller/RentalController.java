@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.manager.boats.rental.boats_rental.persistence.models.Rental;
 import com.manager.boats.rental.boats_rental.services.interfaces.IRentalServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
@@ -14,6 +15,7 @@ import com.manager.boats.rental.boats_rental.web.controller.dto.RentalDto;
 
 import jakarta.validation.Valid;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +28,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/v1/rentals")
+@CrossOrigin(origins = "http://localhost:5173")
 public class RentalController {
 
     @Autowired
@@ -45,7 +48,7 @@ public class RentalController {
         }
         
         rentalServices.save(entity, clientId,boatsId);
-        return ResponseEntity.ok().body(new ApiResponse("sucess",null));
+        return ResponseEntity.ok().body(new ApiResponse("sucess",entity));
     }
 
     @PutMapping("/update/{userId}")

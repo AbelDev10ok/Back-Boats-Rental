@@ -8,8 +8,8 @@
 		<version>3.3.4</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.manager.boats.rental</groupId>
-	<artifactId>boats-rental</artifactId>
+	<groupId>com.manager.back.boats.rental</groupId>
+	<artifactId>back-boats-rental</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>boats-rental</name>
 	<description>Demo project for Spring Boot</description>

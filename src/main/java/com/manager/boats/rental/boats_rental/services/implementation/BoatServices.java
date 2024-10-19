@@ -1,14 +1,19 @@
 package com.manager.boats.rental.boats_rental.services.implementation;
 
 import java.util.List;
+import java.util.Date;
 import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;  
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
+import com.manager.boats.rental.boats_rental.persistence.models.Marin;
 import com.manager.boats.rental.boats_rental.repositories.IBoatRepository;
+import com.manager.boats.rental.boats_rental.repositories.IMarinRepository;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IBoatServices;
 import com.manager.boats.rental.boats_rental.web.controller.dto.BoatDto;
@@ -19,6 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class BoatServices implements IBoatServices{
     @Autowired
     private IBoatRepository boatRepository;
+
+    @Autowired
+    private IMarinRepository marinRepository;
 
     @Autowired
     private ModelMapper modelMapper;
@@ -96,6 +104,40 @@ public class BoatServices implements IBoatServices{
     public boolean existsByTuition(Long tuition) {
         System.out.println(tuition);
         return boatRepository.existsById(tuition);
+    }
+
+    
+
+
+    @Transactional
+    @Override
+    public void insertMarinInBoat(Long marinId, Long boatId) {
+        Optional<Boat> boat = boatRepository.findById(boatId); 
+        Optional<Marin> marin = marinRepository.findById(marinId);
+        if(marin.isPresent()){
+            Marin marinDb = marin.get();
+            marinDb.getBoats().add(boat.get());
+            marinRepository.save(marinDb);
+        }else{
+            new NotFoundException("Marin not found");
+        }
+        if(boat.isPresent()){
+            Boat boatDb = boat.get();
+            boatDb.setMarin(marin.get());
+            boatRepository.save(boatDb);
+        }
+    }
+
+    
+
+    @Override
+    public List<Boat> getBoatsAvaiable(String dateInit,String dateEnd) throws ParseException{
+        SimpleDateFormat stdDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+        Date dnInit = stdDateFormat.parse(dateInit);
+        Date dnEnd = stdDateFormat.parse(dateEnd);
+        return boatRepository.getBoatsAvaliable(dnInit,dnEnd);
+
     }
 
     //mapp Boat to BoatDto
