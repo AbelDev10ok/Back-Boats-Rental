@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
-import com.manager.boats.rental.boats_rental.persistence.models.Rental;
 import com.manager.boats.rental.boats_rental.services.implementation.BoatServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
@@ -14,7 +13,6 @@ import com.manager.boats.rental.boats_rental.web.controller.dto.BoatDto;
 import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Date;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,13 +25,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;  
-
-
-
-
 
 @RestController
 @RequestMapping("/api/v1/boats")
@@ -55,7 +46,12 @@ public class BoatController {
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getBoat(@PathVariable Long id) {
-        return ResponseEntity.ok().body(new ApiResponse("get boat",boatServices.getById(id)));
+        try {
+            return ResponseEntity.ok().body(new ApiResponse("get boat",boatServices.getById(id)));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
+        }
     }
 
     @GetMapping("/available")

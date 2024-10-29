@@ -68,6 +68,11 @@ public class BoatServices implements IBoatServices{
     @Transactional
     @Override
     public void save(BoatDto boatDto) {
+        Optional<Boat> btDb = boatRepository.findById(boatDto.getTuition());
+        if(btDb.isPresent()){
+            throw new NotFoundException("exists");
+        }
+
         Boat boat = new Boat();
         boat.setAbility(boatDto.getAbility());
         boat.setModel(boatDto.getModel());
@@ -78,6 +83,40 @@ public class BoatServices implements IBoatServices{
         boat.setPriceHours(boatDto.getPriceHours());
         boatRepository.save(boat);
     }
+
+
+    // public void save(BoatDto boatDto) {
+    //     // Check if a boat with the given tuition already exists
+    //     Optional<Boat> existingBoat = boatRepository.findById(boatDto.getTuition());
+
+    //     if (existingBoat.isPresent()) {
+    //         // Update the existing boat
+    //         Boat boatToUpdate = existingBoat.get();
+    //         boatToUpdate.setAbility(boatDto.getAbility());
+    //         boatToUpdate.setModel(boatDto.getModel());
+    //         boatToUpdate.setName(boatDto.getName());
+    //         boatToUpdate.setType(boatDto.getType());
+    //         boatToUpdate.setPriceHours(boatDto.getPriceHours()); 
+    //         // ... update other fields as needed
+
+    //         boatRepository.save(boatToUpdate); // Save the updated boat
+    //     } else {
+    //         // Create a new boat
+    //         Boat newBoat = new Boat();
+    //         newBoat.setAbility(boatDto.getAbility());
+    //         newBoat.setModel(boatDto.getModel());
+    //         newBoat.setName(boatDto.getName());
+    //         newBoat.setType(boatDto.getType());
+    //         newBoat.setTuition(boatDto.getTuition());
+    //         newBoat.setState("available"); // Assuming "available" is the default state
+    //         newBoat.setPriceHours(boatDto.getPriceHours());
+    //         boatRepository.save(newBoat);
+    //     }
+    // }
+
+
+
+
     
     @Transactional
     @Override
