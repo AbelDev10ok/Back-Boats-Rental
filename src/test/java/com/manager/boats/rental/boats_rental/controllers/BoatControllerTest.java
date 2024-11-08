@@ -12,6 +12,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*; 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print; 
+
 
 import java.util.Arrays;
 import java.util.List;
@@ -205,7 +207,8 @@ public class BoatControllerTest {
 				.content(boatDtoJson));
 
 		// Then
-		response.andExpect(status().isNotFound()); 
+		response.andExpect(status().isNotFound())
+                .andDo(print());// look debug console
 	}
 
 

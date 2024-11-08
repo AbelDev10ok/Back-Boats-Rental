@@ -3,9 +3,10 @@ package com.manager.boats.rental.boats_rental.web.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.manager.boats.rental.boats_rental.persistence.models.Users;
+import com.manager.boats.rental.boats_rental.services.exception.AlreadyExistsException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IUserServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
-import com.manager.boats.rental.boats_rental.web.controller.dto.UserDto;
 
 import jakarta.validation.Valid;
 
@@ -43,31 +44,45 @@ public class UserController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Long id){
-        userServices.deleteUserById(id);
-        return ResponseEntity.ok().body(new ApiResponse("delete",null));
+        try {
+            userServices.deleteUserById(id);
+            return ResponseEntity.ok().body(new ApiResponse("delete",null));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(new ApiResponse(e.getMessage(),null));
+        }
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse> createUser(@Valid @RequestBody UserDto entity ,BindingResult result) {   
+    public ResponseEntity<ApiResponse> createUser(@Valid @RequestBody Users entity ,BindingResult result) {   
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
         try {
             userServices.saveUser(entity);     
-            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("craete user",entity));
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("create user", entity));
+        } catch (AlreadyExistsException e) {
+            // Devolver una respuesta 409 Conflict con un mensaje más descriptivo
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ApiResponse("error", "El email ya está en uso."));
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(new ApiResponse("error",e));
+            return ResponseEntity.badRequest().body(new ApiResponse("error", e.getMessage()));
         }
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody UserDto entity,BindingResult result, @PathVariable Long id) {
+    public ResponseEntity<ApiResponse> updateUser(@Valid @RequestBody Users entity,BindingResult result, @PathVariable Long id) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
-        userServices.updateUser(entity, id);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("update",entity));
+        try {
+            userServices.updateUser(entity, id);
+            return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse("update",entity));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
+        }
     }
-    
-
+  
 }

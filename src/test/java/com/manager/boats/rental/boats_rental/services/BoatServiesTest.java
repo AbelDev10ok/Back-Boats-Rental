@@ -1,7 +1,9 @@
 package com.manager.boats.rental.boats_rental.services;
 
-import java.beans.Transient;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -194,5 +196,21 @@ public class BoatServiesTest {
         assertEquals(marin, boat.getMarin()); 
     }
 
+    @DisplayName("Test boats aviable")
+    @Test
+    void testBoatsAvaiable() throws ParseException{
+        // given
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        Date dateInit = sdf.parse("2025-01-05");
+        Date dateEnd = sdf.parse("2026-01-06");
+
+        given(boatRepository.getBoatsAvaliable(dateInit,dateEnd)).willReturn(List.of(boatInit));
+        // when
+        List<Boat> boats = boatService.getBoatsAvaiable("2025-01-05","2026-01-06");
+        // then
+        assertNotNull(boats);
+        assertEquals(1, boats.size()); // Check if the list contains one boat
+        assertEquals(boatInit, boats.get(0)); // Check if the boat in the list is boatInit
+    }
 
 }

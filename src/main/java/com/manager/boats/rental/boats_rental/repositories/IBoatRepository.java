@@ -10,7 +10,7 @@ import java.util.Date;
 
 @Repository
 public interface IBoatRepository extends JpaRepository<Boat,Long>{
-    List<Boat> findAll();
+    // List<Boat> findAll();
     boolean existsById(Long id);
     @Query("SELECT b FROM Boat b WHERE b.tuition NOT IN (SELECT r.boat.tuition FROM Rental r WHERE (r.dateInit BETWEEN :startDate AND :endDate) OR (r.dateEnd BETWEEN :startDate AND :endDate))")
     List<Boat> getBoatsAvaliable(Date startDate, Date endDate);

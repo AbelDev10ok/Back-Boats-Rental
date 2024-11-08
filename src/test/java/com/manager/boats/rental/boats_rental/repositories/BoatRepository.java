@@ -8,7 +8,6 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import java.util.List;
 
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Order;
@@ -38,8 +37,6 @@ public class BoatRepository {
         boatInit = new Boat(222222L,"velero",40L,"jenny","xr","true",20L);
 
     }
-
-
 
     @Test
     @Rollback(false)//para que me guarde en db real

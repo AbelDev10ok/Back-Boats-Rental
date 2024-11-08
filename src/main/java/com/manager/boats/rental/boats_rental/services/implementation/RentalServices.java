@@ -34,7 +34,10 @@ public class RentalServices implements IRentalServices{
 
     @Transactional
     @Override
-    public void delete(Long id) {        
+    public void delete(Long id) {    
+        rentalRepository.findById(id)
+        .orElseThrow(() -> new NotFoundException("Rental not found"));
+        
         rentalRepository.deleteById(id);
     }
 

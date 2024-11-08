@@ -38,16 +38,16 @@ public class MarinController {
 
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getMethodName() {
+    public ResponseEntity<ApiResponse> getAllMarins() {
         List<Marin> marins = marinServices.getAllMarins();
         return ResponseEntity.ok().body(new ApiResponse("marins",marins));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getMethodName(@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> getMarinById(@PathVariable Long id) {
         try {
             Marin marin = marinServices.getMarinById(id);
-            return ResponseEntity.ok().body(new ApiResponse("get boat",marin));
+            return ResponseEntity.ok().body(new ApiResponse("get marin",marin));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("errors",e.getMessage()));
         }
@@ -55,7 +55,7 @@ public class MarinController {
     }
     
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> postMethodName(@Valid @RequestBody Marin entity,BindingResult result ) {
+    public ResponseEntity<ApiResponse> saveMarin(@Valid @RequestBody Marin entity,BindingResult result ) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
@@ -65,7 +65,7 @@ public class MarinController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> putMethodName(@Valid @RequestBody Marin entity,BindingResult result ,@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> updateMarin(@Valid @RequestBody Marin entity,BindingResult result ,@PathVariable Long id) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }

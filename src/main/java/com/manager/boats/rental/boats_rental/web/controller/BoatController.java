@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
+import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.implementation.BoatServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
@@ -72,8 +73,14 @@ public class BoatController {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
-        boatServices.save(entity);
-        return ResponseEntity.ok().body(new ApiResponse("create",entity));
+        try{
+            
+            boatServices.save(entity);
+            return ResponseEntity.ok().body(new ApiResponse("create",entity));
+        }catch(Exception e){
+            return ResponseEntity.badRequest()
+            .body(new ApiResponse("error",e.getMessage()));
+        }
     }
 
     @PutMapping("/insert/marin/{marinId}/boat/{boatId}")
@@ -81,14 +88,14 @@ public class BoatController {
         try {
             boatServices.insertMarinInBoat(marinId,boatId);
             return ResponseEntity.ok().body(new ApiResponse("update",null));
-        } catch (Exception e) {
+        } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
         }
     }
     
 
     @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> putMethodName(@Valid @RequestBody BoatDto entity,BindingResult result ,@PathVariable Long id) {
+    public ResponseEntity<ApiResponse> updateBoat(@Valid @RequestBody BoatDto entity,BindingResult result ,@PathVariable Long id) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }

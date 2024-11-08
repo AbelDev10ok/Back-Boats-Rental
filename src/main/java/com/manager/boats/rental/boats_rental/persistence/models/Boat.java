@@ -22,7 +22,7 @@ import jakarta.validation.constraints.NotNull;
 public class Boat {
     @Id
     @NotNull(message = "Tuition is required")
-    @IExsitsBoatDb
+    @IExsitsBoatDb(message="Boat already exists")
     private Long tuition;
 
     @NotBlank(message = "Type is required")

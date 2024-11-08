@@ -37,12 +37,12 @@ public class RentalController {
     private ValidationEntities validationEntities;
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getMethodName() {
+    public ResponseEntity<ApiResponse> getRentals() {
         return ResponseEntity.ok().body(new ApiResponse("suscces",rentalServices.getAll()));
     }
 
     @PostMapping("/clientId/{clientId}/boatsId/{boatsId}")
-    public ResponseEntity<ApiResponse> postMethodName(@Valid @RequestBody RentalDto entity, BindingResult result ,@PathVariable Long clientId,@PathVariable Long boatsId) {
+    public ResponseEntity<ApiResponse> saveRental(@Valid @RequestBody RentalDto entity, BindingResult result ,@PathVariable Long clientId,@PathVariable Long boatsId) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
@@ -66,8 +66,13 @@ public class RentalController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse> deleteRental(@PathVariable Long id){
-        rentalServices.delete(id);
-        return ResponseEntity.ok().body(new ApiResponse("delete",null));
+        try {
+            rentalServices.delete(id);
+            return ResponseEntity.ok().body(new ApiResponse("delete",null));
+            
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
+        }
     }
     
 }

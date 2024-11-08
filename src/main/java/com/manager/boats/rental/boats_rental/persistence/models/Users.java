@@ -1,20 +1,19 @@
 package com.manager.boats.rental.boats_rental.persistence.models;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.manager.boats.rental.boats_rental.services.exception.IExistsUserByEmail;
-
+ 
 import java.util.HashSet;
 
 
@@ -24,14 +23,22 @@ public class Users{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    
+    @NotBlank(message = "name is requeride")
     private String name;
-    private String lastname;
+    @NotBlank(message = "lastname is required")
+    private String lastname;    
+    @NotBlank(message = "email is required")
+    @Email(message = "Email is not valid", regexp = "^[a-zA-Z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-zA-Z0-9.-]+$")
+    // @IExistsUserByEmail
     private String email;
+    @NotBlank(message = "email is required")
+    @Size(min = 5,max = 20)
     private String password;
-    @Column(name = "phone_number")
     private String phoneNumber;
     private String addres;
-    
+
+
     @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = jakarta.persistence.CascadeType.ALL,orphanRemoval = true)
     private Set<Rental> rentals;

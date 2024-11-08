@@ -83,40 +83,6 @@ public class BoatServices implements IBoatServices{
         boat.setPriceHours(boatDto.getPriceHours());
         boatRepository.save(boat);
     }
-
-
-    // public void save(BoatDto boatDto) {
-    //     // Check if a boat with the given tuition already exists
-    //     Optional<Boat> existingBoat = boatRepository.findById(boatDto.getTuition());
-
-    //     if (existingBoat.isPresent()) {
-    //         // Update the existing boat
-    //         Boat boatToUpdate = existingBoat.get();
-    //         boatToUpdate.setAbility(boatDto.getAbility());
-    //         boatToUpdate.setModel(boatDto.getModel());
-    //         boatToUpdate.setName(boatDto.getName());
-    //         boatToUpdate.setType(boatDto.getType());
-    //         boatToUpdate.setPriceHours(boatDto.getPriceHours()); 
-    //         // ... update other fields as needed
-
-    //         boatRepository.save(boatToUpdate); // Save the updated boat
-    //     } else {
-    //         // Create a new boat
-    //         Boat newBoat = new Boat();
-    //         newBoat.setAbility(boatDto.getAbility());
-    //         newBoat.setModel(boatDto.getModel());
-    //         newBoat.setName(boatDto.getName());
-    //         newBoat.setType(boatDto.getType());
-    //         newBoat.setTuition(boatDto.getTuition());
-    //         newBoat.setState("available"); // Assuming "available" is the default state
-    //         newBoat.setPriceHours(boatDto.getPriceHours());
-    //         boatRepository.save(newBoat);
-    //     }
-    // }
-
-
-
-
     
     @Transactional
     @Override
@@ -141,30 +107,31 @@ public class BoatServices implements IBoatServices{
     @Transactional(readOnly = true)
     @Override
     public boolean existsByTuition(Long tuition) {
-        System.out.println(tuition);
         return boatRepository.existsById(tuition);
     }
-
-    
-
 
     @Transactional
     @Override
     public void insertMarinInBoat(Long marinId, Long boatId) {
-        Optional<Boat> boat = boatRepository.findById(boatId); 
+        Optional<Boat> boat = boatRepository.findById(boatId);
         Optional<Marin> marin = marinRepository.findById(marinId);
-        if(marin.isPresent()){
-            Marin marinDb = marin.get();
-            marinDb.getBoats().add(boat.get());
-            marinRepository.save(marinDb);
-        }else{
-            new NotFoundException("Marin not found");
+
+        if (marin.isEmpty()) {
+            throw new NotFoundException("Marin not found");
         }
-        if(boat.isPresent()){
-            Boat boatDb = boat.get();
-            boatDb.setMarin(marin.get());
-            boatRepository.save(boatDb);
+
+        if (boat.isEmpty()) {
+            throw new NotFoundException("Boat not found");
         }
+
+        // Si ambos existen, procede con la actualización
+        Marin marinDb = marin.get();
+        marinDb.getBoats().add(boat.get());
+        marinRepository.save(marinDb);
+
+        Boat boatDb = boat.get();
+        boatDb.setMarin(marin.get());
+        boatRepository.save(boatDb);
     }
 
     

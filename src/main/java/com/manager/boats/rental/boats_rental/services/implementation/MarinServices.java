@@ -21,14 +21,18 @@ public class MarinServices implements IMarinServices {
     @Transactional
     @Override
     public void deleteMarinById(Long id) {
-        marinRepository.deleteById(id);
-        
+        Optional<Marin> marinOptional = marinRepository.findById(id);
+        if (marinOptional.isPresent()) {
+            marinRepository.deleteById(id);
+        } else {
+            throw new NotFoundException("Marin not found"); 
+        }
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<Marin> getAllMarins() {
-        return marinRepository.findAll();
+            return marinRepository.findAll();
     }
 
     @Transactional(readOnly = true)
@@ -45,6 +49,7 @@ public class MarinServices implements IMarinServices {
     @Transactional
     @Override
     public void saveMarin(Marin marin) {
+        
         marinRepository.save(marin);
     }
 
@@ -54,14 +59,16 @@ public class MarinServices implements IMarinServices {
         Optional<Marin> marinOptional = marinRepository.findById(id);
         if(marinOptional.isPresent()){
             Marin marinDb = marinOptional.get();
-            marinDb.setName(marinDb.getName());
-            marinDb.setLastname(marinDb.getLastname());
+            marinDb.setName(marin.getName());
+            marinDb.setLastname(marin.getLastname());
             marinDb.setDni(marin.getDni());
             marinRepository.save(marinDb);
         }else{
-            throw new RuntimeException("Marin not found");
+            throw new NotFoundException("Marin not found");
         }
     }
+
+
 
     @Override
     public boolean existsMarin(String dni) {
