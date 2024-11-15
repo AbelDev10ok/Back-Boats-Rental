@@ -11,19 +11,16 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
 import com.manager.boats.rental.boats_rental.persistence.models.Rental;
 import com.manager.boats.rental.boats_rental.persistence.models.Users;
-import com.manager.boats.rental.boats_rental.web.controller.dto.RentalDto;
 
 @DataJpaTest // SOLO PRUEBA CAPA DE PERSISTENCIA (ENTIDADES Y REPOSITORIOS)
 @AutoConfigureTestDatabase(replace = Replace.NONE)//para que ejecute a baseses de datos real
@@ -45,7 +42,7 @@ public class RentalRepositoryTest {
 
     @BeforeEach
     public void setUp(){
-        userInit = new Users("John", "Doe", "johndoe@example.com", "password", "1234567890", "Some Address");
+        userInit = new Users("johndoe@example.com", "password");
         userRepository.save(userInit); 
 
         boatInit = new Boat(222222L,"velero",40L,"jenny","xr","true",20L);

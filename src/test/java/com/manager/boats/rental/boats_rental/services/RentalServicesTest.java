@@ -118,7 +118,7 @@ public class RentalServicesTest {
         // Given
         Long userId = 48L;
         Rental existingRental = new Rental(); // Crea una instancia de Rental con datos existentes
-        existingRental.setUser(new Users("abel", "alarcon", "abel@gmial.com", "11111", "12345","casacuberta")); // Asocia un usuario al rental
+        existingRental.setUser(new Users("abel@gmial.com", "11111")); // Asocia un usuario al rental
         given(rentalRepository.findByUserId(userId)).willReturn(Optional.of(existingRental));
     
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); // Define el formato de fecha

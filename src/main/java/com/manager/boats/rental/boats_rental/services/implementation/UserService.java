@@ -1,15 +1,18 @@
 package com.manager.boats.rental.boats_rental.services.implementation;
 
-import java.lang.foreign.Linker.Option;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.manager.boats.rental.boats_rental.persistence.models.Role;
 import com.manager.boats.rental.boats_rental.persistence.models.Users;
+import com.manager.boats.rental.boats_rental.repositories.IRoleRepository;
 import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 import com.manager.boats.rental.boats_rental.services.exception.AlreadyExistsException;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
@@ -22,6 +25,13 @@ public class UserService implements IUserServices{
 
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private IRoleRepository roleRepository;
+
+    @Autowired 
+    private PasswordEncoder passwordEncoder;
+
 
     @Autowired
     private ModelMapper modelMapper;
@@ -47,13 +57,16 @@ public class UserService implements IUserServices{
         if(exists){
             throw new AlreadyExistsException("email exists");
         }
-        // Users newUser = new Users();
-        // newUser.setName(user.getName());
-        // newUser.setLastname(user.getLastname());
-        // newUser.setEmail(user.getEmail());
-        // newUser.setPassword(user.getPassword());
-        // newUser.setPhoneNumber(user.getPhoneNumber());
-        // newUser.setAddres(user.getAddres());
+        Optional<Role> roleUser = roleRepository.findByName("ROLE_USER");   
+        List<Role> roles = new ArrayList<>();
+        roleUser.ifPresent(roles::add);
+        if(user.isAdmin()){
+            System.out.println(user.isAdmin());
+            Optional<Role> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+            roleAdmin.ifPresent(roles::add);
+        }
+        user.setRoles(roles);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
     }
 
@@ -74,12 +87,9 @@ public class UserService implements IUserServices{
         Optional<Users> usersOptional = userRepository.findById(id);
         if(usersOptional.isPresent()){
             Users newUsers = usersOptional.get();
-            newUsers.setName(user.getName());
-            newUsers.setLastname(user.getLastname());
+
             newUsers.setEmail(user.getEmail());
-            newUsers.setPassword(user.getPassword());
-            newUsers.setPhoneNumber(user.getPhoneNumber());
-            newUsers.setAddres(user.getAddres());
+            newUsers.setPassword(passwordEncoder.encode(user.getPassword()));
             userRepository.save(newUsers);
         }else{
             throw new NotFoundException("User not found");
