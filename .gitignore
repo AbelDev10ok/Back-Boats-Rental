@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .env
-src/test/
+!**src/test/
 
 
 ### STS ###
