@@ -4,17 +4,15 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.manager.boats.rental.boats_rental.configuration.security.JwtUtil;
+import com.manager.boats.rental.boats_rental.persistence.models.Users;
+import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
@@ -29,15 +27,20 @@ import static com.manager.boats.rental.boats_rental.configuration.security.Token
 
 public class JwtValidationFilter extends BasicAuthenticationFilter{
 
+    
+    private final IUserRepository userRepository;
 
-    public JwtValidationFilter(AuthenticationManager authenticationManager) {
+
+    public JwtValidationFilter(AuthenticationManager authenticationManager,IUserRepository userRepository) {
         super(authenticationManager);
+        this.userRepository = userRepository; // Initialize in constructor
+
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-                
+
                 String header = request.getHeader(HEADER_STRING);
                 if(header == null || !header.startsWith(TOKEN_PREFIX)){
                     chain.doFilter(request, response);
@@ -49,21 +52,29 @@ public class JwtValidationFilter extends BasicAuthenticationFilter{
                     // verificamos la firma del token
                     Claims claims = Jwts.parser().verifyWith(SECRET_KEY).build().parseSignedClaims(token).getPayload();
                     String username = claims.getSubject();
-                    // otra forma
-                    // String username2 = (String) claims.get("username");
+
+                    Users user = userRepository.findByEmail(username)
+                            .orElseThrow(() -> new JwtException("User not found in database"));
+                    // user is enabled
+                    if (!user.getEnabled()) {
+                        System.out.println(user.getEnabled());
+                        throw new JwtException("User is disabled");
+                    }
+
+
                     Object authoritiesClaims = claims.get("authorities");
-                    
 
-                    Collection<GrantedAuthority> authorities = Arrays.asList(new ObjectMapper()
-                            .addMixIn(SimpleGrantedAuthority.class, SimpleGrentesAuthorityJson.class)
-                            .readValue(authoritiesClaims.toString().getBytes(),SimpleGrantedAuthority[].class)
-                            );
-                    
-
+                    Collection<? extends GrantedAuthority> authorities = Arrays.asList(
+                        new ObjectMapper()
+                    .addMixIn(SimpleGrantedAuthority.class, 
+                    SimpleGrentesAuthorityJson.class)
+                    .readValue(authoritiesClaims.toString().getBytes(), SimpleGrantedAuthority[].class)
+                    );
+    
                     // null porque el password solo se valida cuando creamos el token
                     
                     // INICIAMOS SESCION Y AUTHENTICAMOS
-                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken (username, null, authorities);
+                    UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken (user, null, authorities);
                     SecurityContextHolder .getContext().setAuthentication(authenticationToken);
                     
                     // continuar con los demas filtros

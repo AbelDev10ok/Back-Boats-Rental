@@ -1,31 +1,43 @@
 package com.manager.boats.rental.boats_rental.web.controller.dto;
 
+import com.manager.boats.rental.boats_rental.persistence.models.BoatType;
+
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.NotNull;
+
 public class BoatDto {
     private Long tuition;
-    private String type;
+    @NotNull
+    @Enumerated(EnumType.STRING)
+    private BoatType type;
     private Long ability;
     private String name;
     private String model;
     private Long priceHours;
-    
+    private boolean enabled;    
     
     
     public BoatDto() {
     }
     
-    public BoatDto(Long tuition,String type, Long ability, String name, String model,Long priceHours) {
+    public BoatDto(Long tuition,BoatType type, Long ability, String name, String model,Long priceHours, boolean enabled) {
         this.tuition = tuition;
         this.type = type;
         this.ability = ability;
         this.name = name;
         this.model = model;
         this.priceHours = priceHours;
+        this.enabled = enabled;
     }
 
-    public String getType() {
+    
+
+
+    public BoatType getType() {
         return type;
     }
-    public void setType(String type) {
+    public void setType(BoatType type) {
         this.type = type;
     }
     public Long getAbility() {
@@ -62,5 +74,13 @@ public class BoatDto {
     public void setPriceHours(Long priceHours) {
         this.priceHours = priceHours;
     }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }    
     
 }

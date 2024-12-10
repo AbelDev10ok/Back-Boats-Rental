@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,6 +18,7 @@ import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 import com.manager.boats.rental.boats_rental.services.exception.AlreadyExistsException;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IUserServices;
+import com.manager.boats.rental.boats_rental.web.controller.dto.UserDtoEmail;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserResponse;
 
 
@@ -50,6 +52,12 @@ public class UserService implements IUserServices{
         return userRepository.findById(id).get();
     }
 
+    @Override
+    public Users findByEmail(String email){
+        return userRepository.findByEmail(email).get();
+    }
+
+
     @Transactional
     @Override
     public void saveUser(Users user) {
@@ -81,6 +89,28 @@ public class UserService implements IUserServices{
     }
 
 
+
+    @Override
+    public Users updateUserEmail(UserDtoEmail user, Long id) {
+        Users existsUser = userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        if(userRepository.existsByEmailAndIdNot(user.getEmail(), id)){
+            throw new AlreadyExistsException("Email already exists with a count");
+        }
+        existsUser.setEmail(user.getEmail());
+        return userRepository.save(existsUser);
+    
+    }
+
+    
+
+    @Override
+    public Users updateUserPassword(Long id, String newPassword) {
+        Users user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("User not found"));
+        user.setPassword(passwordEncoder.encode(newPassword));
+        return userRepository.save(user);
+        
+    }
+
     @Transactional
     @Override
     public void updateUser(Users user, Long id) {
@@ -97,10 +127,22 @@ public class UserService implements IUserServices{
         
     }
 
+    @Transactional
+    public void disableUser(Long id, boolean enabled) {
+        Optional<Users> userOptional = userRepository.findById(id);
+        if (userOptional.isPresent()) {
+            Users user = userOptional.get();
+            user.setEnabled(enabled);
+            userRepository.save(user);
+        } else {
+            throw new NotFoundException("User not found");
+        }
+    }
+
     @Override
     public boolean existsUser(String email) {
         return userRepository.existsByEmail(email);
     }
 
-    
+
 }

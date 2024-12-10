@@ -16,7 +16,6 @@ import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashSet;
@@ -38,7 +37,8 @@ public class Users{
     @NotBlank(message = "password is required")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
-    // clase Boolean por defecto null 
+    // clase Boolean for default
+    // I could place from the bd in true but i do from prePersist 
     private boolean enabled;
 
     @Transient
@@ -133,6 +133,4 @@ public class Users{
                 + admin + ", rentals=" + rentals + ", roles=" + roles + "]";
     }
 
-
-    
 }

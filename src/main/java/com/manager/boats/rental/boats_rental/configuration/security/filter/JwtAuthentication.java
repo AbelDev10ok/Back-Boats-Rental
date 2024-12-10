@@ -6,14 +6,12 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.User;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import com.fasterxml.jackson.core.exc.StreamReadException;
@@ -82,10 +80,18 @@ public class JwtAuthentication extends UsernamePasswordAuthenticationFilter {
                 String username = user.getUsername();
                 Collection<? extends GrantedAuthority> authorities = authResult.getAuthorities();
                
+
+                // // Extract the authority names into a List<String>
+                // List<String> roles = authorities.stream()
+                // .map(GrantedAuthority::getAuthority)
+                // .toList(); // Use toList() for Java 16+, or collect(Collectors.toList()) for older versions
+
+
                 // creamos clamis
                 Claims claims = Jwts.claims()
                                 .add("authorities",new ObjectMapper().writeValueAsString(authorities))
-                                .add("username",username).build(); 
+                                .add("username",username)
+                                .build(); 
                 String token = Jwts.builder()
                             .subject(username)
                             .claims(claims)
@@ -124,3 +130,8 @@ public class JwtAuthentication extends UsernamePasswordAuthenticationFilter {
     
     
 }
+
+// JwtAuthentication autentica al usuario con usuario y contraseña durante el inicio de sesión.
+// JwtValidationFilter autentica al usuario con el token JWT en cada solicitud posterior, 
+// sin usar la contraseña. La información del usuario se obtiene de la base de datos utilizando el nombre de usuario del token.
+//  El null en el segundo argumento indica que la contraseña no es relevante en este paso.

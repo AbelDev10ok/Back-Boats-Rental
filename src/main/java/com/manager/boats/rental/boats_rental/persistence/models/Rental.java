@@ -11,7 +11,14 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
+
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
+
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 
 @Entity
 @Table
@@ -19,39 +26,54 @@ public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Temporal(TemporalType.DATE)//ESPECIFICO QUE SOLO GUARDO LA FECHA SIN HORAS
     @Column(name="date_init")
     private Date dateInit;
     @Column(name="date_end")
+    @Temporal(TemporalType.DATE)
     private Date dateEnd;
     @Enumerated(EnumType.STRING)
     private EstateRental state;//pend,conf,canc
-    private Long hours;
-    @Column(name="total_hours")
+    @Column(name="total")
     private Long total;
+
+    @Column(name = "confirmation_token")
+    private String confirmationToken;
+
+    @Column(name = "confirmed")
+    private boolean confirmed = false;
 
     @ManyToOne
     @JoinColumn(name = "user_id")//fk
     private Users user;
 
+    // RENTAS PUEDEN TENER UN BOTE
     @ManyToOne
     @JoinColumn(name = "boat_id")//fk
+    @JsonBackReference //otra forma de solucionar bucle se coloca en padre en este caso renta
     private Boat boat;
     
     public Rental() {
     }
 
-
-    public Rental(Date dateInit, Date dateEnd, EstateRental state, Long hours, Long total) {
-        this.dateInit = dateInit;
-        this.dateEnd = dateEnd;
-        this.state = state;
-        this.hours = hours;
-        this.total = total;
-    }
-
     @PrePersist
     private void totalRent(){
-        this.total = this.boat.getPriceHours() * hours;
+        long diff = dateEnd.getTime() - dateInit.getTime();
+        if(diff==0){
+            this.total = this.boat.getPriceHours();
+            return;
+        }
+        long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        this.total = this.boat.getPriceHours() * days;
+    }
+
+    
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
 
@@ -79,22 +101,6 @@ public class Rental {
         this.state = state;
     }
 
-    public Long getHours() {
-        return hours;
-    }
-
-    public void setHours(Long hours) {
-        this.hours = hours;
-    }
-
-    public Long getTotalHours() {
-        return total;
-    } 
-
-    public void setTotalHours(Long total) {
-        this.total = total;
-    }
-
     public Users getUser() {
         return user;
     }
@@ -110,6 +116,32 @@ public class Rental {
     public void setBoat(Boat boat) {
         this.boat = boat;
     }
+
+    public Long getTotal() {
+        return total;
+    }
+
+    public void setTotal(Long total) {
+        this.total = total;
+    }
+
+
+    public String getConfirmationToken() {
+        return confirmationToken;
+    }
+
+    public void setConfirmationToken(String confirmationToken) {
+        this.confirmationToken = confirmationToken;
+    }
+
+    public boolean isConfirmed() {
+        return confirmed;
+    }
+
+    public void setConfirmed(boolean confirmed) {
+        this.confirmed = confirmed;
+    }
+
 
     
 
@@ -157,13 +189,13 @@ public class Rental {
         return true;
     }
 
+        @Override
+        public String toString() {
+            return "Rental [id=" + id + ", dateInit=" + dateInit + ", dateEnd=" + dateEnd + ", state=" + state + ", total="
+                    + total + ", confirmationToken=" + confirmationToken + ", confirmed=" + confirmed + ", user=" + user
+                    + ", boat=" + boat + "]";
+        }
 
-    @Override
-    public String toString() {
-        return "Rental [dateInit=" + dateInit + ", dateEnd=" + dateEnd + ", state=" + state + ", hours="
-                + hours + ", total=" + total + ", user=" + user + ", boat=" + boat + "]";
-    }
 
-    
 
 }

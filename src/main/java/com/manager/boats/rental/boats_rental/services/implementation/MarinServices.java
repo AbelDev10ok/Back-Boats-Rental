@@ -3,14 +3,19 @@ package com.manager.boats.rental.boats_rental.services.implementation;
 import java.util.List;
 import java.util.Optional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.manager.boats.rental.boats_rental.persistence.models.Boat;
 import com.manager.boats.rental.boats_rental.persistence.models.Marin;
 import com.manager.boats.rental.boats_rental.repositories.IMarinRepository;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
+import com.manager.boats.rental.boats_rental.services.interfaces.IBoatServices;
 import com.manager.boats.rental.boats_rental.services.interfaces.IMarinServices;
+import com.manager.boats.rental.boats_rental.web.controller.dto.MarinDto;
+import com.manager.boats.rental.boats_rental.web.controller.dto.MarinResponse;
 
 @Service
 public class MarinServices implements IMarinServices {
@@ -18,29 +23,46 @@ public class MarinServices implements IMarinServices {
     @Autowired
     private IMarinRepository marinRepository;
 
+    @Autowired
+    private IBoatServices  boatServices;
+
+    @Autowired
+    private ModelMapper modelMapper;
+
+    
+
+    @Override
+    public Marin findByDni(String dni) {
+        return marinRepository.findByDni(dni);
+    }
+
     @Transactional
     @Override
     public void deleteMarinById(Long id) {
         Optional<Marin> marinOptional = marinRepository.findById(id);
         if (marinOptional.isPresent()) {
+            for(Boat boat: marinOptional.get().getBoats()){
+                boatServices.delete(boat.getTuition());
+            }
             marinRepository.deleteById(id);
         } else {
             throw new NotFoundException("Marin not found"); 
         }
+        // delete boats for not have errors of restriction of key between relations
+    }
+    
+    @Transactional(readOnly = true)
+    @Override
+    public List<MarinResponse> getAllMarins() {
+            return marinRepository.findAll().stream().map(marin->modelMapper.map(marin, MarinResponse.class)).toList();
     }
 
     @Transactional(readOnly = true)
     @Override
-    public List<Marin> getAllMarins() {
-            return marinRepository.findAll();
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public Marin getMarinById(Long id) {
+    public MarinResponse getMarinById(Long id) {
         Optional<Marin> marin = marinRepository.findById(id);
         if(marin.isPresent()){
-            return marin.get();
+            return modelMapper.map(marin.get(), MarinResponse.class);
         }else{
             throw new NotFoundException("Marin not found");
         }
@@ -55,13 +77,13 @@ public class MarinServices implements IMarinServices {
 
     @Transactional
     @Override
-    public void updateMarin(Marin marin, Long id) {
+    public void updateMarin(MarinDto marindto, Long id) {
         Optional<Marin> marinOptional = marinRepository.findById(id);
         if(marinOptional.isPresent()){
             Marin marinDb = marinOptional.get();
-            marinDb.setName(marin.getName());
-            marinDb.setLastname(marin.getLastname());
-            marinDb.setDni(marin.getDni());
+            marinDb.setName(marindto.getName());
+            marinDb.setLastname(marindto.getLastname());
+            marinDb.setDni(marindto.getDni());
             marinRepository.save(marinDb);
         }else{
             throw new NotFoundException("Marin not found");

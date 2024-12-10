@@ -33,7 +33,6 @@ import com.manager.boats.rental.boats_rental.repositories.IBoatRepository;
 import com.manager.boats.rental.boats_rental.repositories.IMarinRepository;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.implementation.BoatServices;
-import com.manager.boats.rental.boats_rental.web.controller.dto.BoatDto;
 
 // cargamos extensiones de mockito con junit5
 @ExtendWith(MockitoExtension.class)
@@ -52,19 +51,11 @@ public class BoatServiesTest {
     private Boat boatInit;
     
 
-    private BoatDto boatDtoInit;
 
        @BeforeEach
     public void setUp(){
         boatInit = new Boat(222222L,"velero",40L,"jenny","xr","true",20L);
 
-        boatDtoInit = new BoatDto();
-        boatDtoInit.setTuition(boatInit.getTuition());
-        boatDtoInit.setAbility(boatInit.getAbility());
-        boatDtoInit.setModel(boatInit.getModel());
-        boatDtoInit.setName(boatInit.getName());
-        boatDtoInit.setPriceHours(boatInit.getPriceHours());
-        boatDtoInit.setType(boatInit.getType());
     }
 
 
@@ -74,7 +65,7 @@ public class BoatServiesTest {
         // given
         given(boatRepository.save(boatInit)).willReturn(boatInit);
         // when
-        boatService.save(boatDtoInit);
+        boatService.save(boatInit);
         // then
     }
 
@@ -82,10 +73,10 @@ public class BoatServiesTest {
     @Test
     void testSaveBoatExceptions(){
         // given
-        given(boatRepository.findById(boatInit.getTuition())).willReturn(Optional.of(boatInit));
+        given(boatRepository.findByTuition(boatInit.getTuition())).willReturn(Optional.of(boatInit));
         // when
-        assertThrows(NotFoundException.class, () ->{
-            boatService.save(boatDtoInit);
+        assertThrows(RuntimeException.class, () ->{
+            boatService.save(boatInit);
 
         });
         // then
@@ -131,12 +122,12 @@ public class BoatServiesTest {
     @Test
     void testUpdateBoat(){
     // given
-    given(boatRepository.findById(boatInit.getTuition())).willReturn(Optional.of(boatInit));
-    boatDtoInit.setType("titanic"); 
+    given(boatRepository.findById(boatInit.getId())).willReturn(Optional.of(boatInit));
+    boatInit.setType("titanic"); 
 
     // when
-    boatService.updateProduct(boatDtoInit, boatInit.getTuition()); 
-    Boat boat = boatService.getById(boatInit.getTuition());
+    boatService.updateProduct(boatInit, boatInit.getId()); 
+    Boat boat = boatService.getById(boatInit.getId());
 
     // then
     assertEquals(boat.getType(), "titanic");
@@ -146,11 +137,11 @@ public class BoatServiesTest {
     @Test
     void deleteBoatNotFound() {
         // Given: Boat does NOT exist
-        given(boatRepository.findById(boatInit.getTuition())).willReturn(Optional.empty());
+        given(boatRepository.findById(boatInit.getId())).willReturn(Optional.empty());
     
         // When/Then: Expect an exception (or handle gracefully)
         assertThrows(NotFoundException.class, () -> {
-            boatService.delete(boatInit.getTuition());
+            boatService.delete(boatInit.getId());
         });
     
         // Also verify that delete is NEVER called on the repository
@@ -162,6 +153,7 @@ public class BoatServiesTest {
     void deleteBoatSuccess() {
         // Given: Boat exists in the repository
         given(boatRepository.findById(boatInit.getTuition())).willReturn(Optional.of(boatInit));
+        // willDoNothing le dice a mockito que no ejecute nada cuandose llame al metodo(deleteById) ni devuelva nada
         willDoNothing().given(boatRepository).deleteById(boatInit.getTuition());
 
         // When: delete method is called

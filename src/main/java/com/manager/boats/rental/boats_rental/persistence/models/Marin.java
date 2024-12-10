@@ -40,7 +40,16 @@ public class Marin {
         this.boats = new ArrayList<>();
     }
 
-    
+    public Marin(String name, String lastname, String dni) {
+        this.name = name;
+        this.lastname = lastname;
+        this.dni = dni;
+        this.boats = new ArrayList<>();
+    }
+
+
+
+
     public Marin(Long id, String name, String lastname, String dni) {
         this.id = id;
         this.name = name;
@@ -86,6 +95,13 @@ public class Marin {
 
     public void setBoats(List<Boat> boats) {
         this.boats = boats;
+    }
+
+
+    @Override
+    public String toString() {
+        return "Marin [id=" + id + ", name=" + name + ", lastname=" + lastname + ", dni=" + dni + ", boats=" + boats
+                + "]";
     }
 
     

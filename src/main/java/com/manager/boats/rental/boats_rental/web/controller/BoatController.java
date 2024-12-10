@@ -5,11 +5,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
-import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.implementation.BoatServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
-import com.manager.boats.rental.boats_rental.web.controller.dto.BoatDto;
+import com.manager.boats.rental.boats_rental.web.controller.dto.BoatResponse;
 
 import jakarta.validation.Valid;
 
@@ -18,8 +17,8 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,8 +27,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
-@RequestMapping("/api/v1/boats")
-@CrossOrigin(origins = "http://localhost:5173")
+@RequestMapping("${api.base.path}/boats")
 public class BoatController {   
 
     @Autowired
@@ -40,15 +38,16 @@ public class BoatController {
 
 
     @GetMapping
-    public ResponseEntity<?> getAllBoats() {
-        List<Boat> boats = boatServices.getAll();
-        return ResponseEntity.ok().body(boats);
+    public ResponseEntity<ApiResponse> getAllBoats() {
+        List<BoatResponse> boats = boatServices.getAll();
+        return ResponseEntity.ok().body(new ApiResponse("boats",boats));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getBoat(@PathVariable Long id) {
+    @GetMapping("/{tuition}")
+    @PreAuthorize("hasRole('ROLE_USER')")
+    public ResponseEntity<ApiResponse> getBoat(@PathVariable Long tuition) {
         try {
-            return ResponseEntity.ok().body(new ApiResponse("get boat",boatServices.getById(id)));
+            return ResponseEntity.ok().body(new ApiResponse("get boat",boatServices.getByTuition(tuition)));
             
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
@@ -56,6 +55,7 @@ public class BoatController {
     }
 
     @GetMapping("/available")
+    @PreAuthorize("hasRole('ROLE_USER')")
     public ResponseEntity<ApiResponse> getBoatsAvaiable(@RequestParam String dateInit, @RequestParam String dateEnd) {
 
         try {
@@ -67,14 +67,13 @@ public class BoatController {
     }
     
     
-    
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> saveboat(@Valid @RequestBody BoatDto entity, BindingResult result) {
+    public ResponseEntity<ApiResponse> saveboat(@Valid @RequestBody Boat entity, BindingResult result) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
         try{
-            
             boatServices.save(entity);
             return ResponseEntity.ok().body(new ApiResponse("create",entity));
         }catch(Exception e){
@@ -83,38 +82,50 @@ public class BoatController {
         }
     }
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/insert/marin/{marinId}/boat/{boatId}")
     public ResponseEntity<ApiResponse> insertMarinIntoBoat(@PathVariable Long marinId, @PathVariable Long boatId) {
         try {
             boatServices.insertMarinInBoat(marinId,boatId);
             return ResponseEntity.ok().body(new ApiResponse("update",null));
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
-        }
-    }
-    
-
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateBoat(@Valid @RequestBody BoatDto entity,BindingResult result ,@PathVariable Long id) {
-        if(result.hasFieldErrors()){
-            return validationEntities.validation(result);
-        }
-        try {
-            boatServices.updateProduct(entity, id);
-            return ResponseEntity.ok().body(new ApiResponse("update boat",entity));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
         }
     }
     
-    @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse> deleteBoat(@PathVariable Long id){
-        try{
-            boatServices.delete(id);
-            return ResponseEntity.ok().body(new ApiResponse("delete",null));
-        }catch(Exception e){
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PutMapping("/{tuition}")
+    public ResponseEntity<ApiResponse> updateBoat(@Valid @RequestBody Boat entity,BindingResult result ,@PathVariable Long tuition) {
+        if(result.hasFieldErrors()){
+            return validationEntities.validation(result);
+        }
+        try {
+            boatServices.updateBoat(entity, tuition);
+            return ResponseEntity.ok().body(new ApiResponse("update boat",entity));
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse(e.getMessage(),null));
         }
+    }
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @DeleteMapping("/{tuition}")
+    public ResponseEntity<ApiResponse> deleteBoat(@PathVariable Long tuition){
+        try{
+            boatServices.delete(tuition);
+            return ResponseEntity.ok().body(new ApiResponse("delete",null));
+        }catch (Exception e) {
+            String message = getRootCauseMessage(e); 
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ApiResponse("error", message));
+        }
+    }
+
+    private String getRootCauseMessage(Throwable e) {
+        Throwable rootCause = e;
+        while (rootCause.getCause() != null) {
+            rootCause = rootCause.getCause();
+        }
+        return rootCause.getMessage();
     }
 
 }

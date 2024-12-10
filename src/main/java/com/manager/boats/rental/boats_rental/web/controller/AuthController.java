@@ -10,19 +10,21 @@ import com.manager.boats.rental.boats_rental.services.interfaces.IUserServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
 
-import io.jsonwebtoken.Jwts;
 import jakarta.validation.Valid;
 
-import static com.manager.boats.rental.boats_rental.configuration.security.TokenJwtConfig.SECRET_KEY;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+
+import javax.security.sasl.AuthenticationException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
@@ -42,7 +44,14 @@ public class AuthController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
     private JwtUtil jwtUtil;
+
+    // @Autowired
+    // Dotenv dotenv;
+
 
 
     @Autowired
@@ -65,21 +74,26 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse> loginUser(@RequestBody Users entity) {
+    public ResponseEntity<?> loginUser(@RequestBody Users entity) {
         try {
-            Users user = userRepository.findByEmail(entity.getEmail())
-                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+            userRepository.findByEmail(entity.getEmail())
+                    .orElseThrow(() -> new UsernameNotFoundException("User not found"));                   
 
-            if (!passwordEncoder.matches(entity.getPassword(), user.getPassword())) {
-                throw new BadCredentialsException("Invalid password");
-            }
+            Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(entity.getEmail(), entity.getPassword())
+            );
 
-            // Use your JwtUtil class to generate the token
-            String token = jwtUtil.generateToken(user);  //  Use the overload for User objects.
+            String email = ((User) authentication.getPrincipal()).getUsername();  // Obtener el email
 
-            return ResponseEntity.ok(new ApiResponse("success", Map.of("token", token)));
-        } catch (UsernameNotFoundException | BadCredentialsException ex) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse(ex.getMessage(), null));
+            Users user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found")); // Obtener el usuario de la base de datos
+
+
+            String token = jwtUtil.generateToken(user);
+
+            return ResponseEntity.ok(new ApiResponse("success", Map.of("id",user.getId(),"email",user.getEmail(),"token", token)));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse("error",e.getMessage())); // Encapsula la excepción
         }
     }
 }

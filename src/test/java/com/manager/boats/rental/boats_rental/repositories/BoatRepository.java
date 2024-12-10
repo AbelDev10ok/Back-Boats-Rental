@@ -17,7 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.Replace;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.annotation.Rollback;
+// import org.springframework.test.annotation.Rollback;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
 
@@ -39,14 +39,14 @@ public class BoatRepository {
     }
 
     @Test
-    @Rollback(false)//para que me guarde en db real
+    // @Rollback(false)//para que me guarde en db real
     @Order(1)
-    @DisplayName("Guardar nuevo marin")
-    public void guardarMarin(){
+    @DisplayName("Guardar nuevo Bote")
+    public void guardarBote(){
         // BDD - estrategia a aplciar (usuario y comportamiento del sistema)
 
         // given - dado o condicion
-        Boat boat = new Boat(12323414L,"velero",40L,"jenny","xr","true",20L);
+        Boat boat = new Boat(1231231231L,"velero",40L,"jenny","xr","true",20L);
 
         // when - accion o el comportamiento
         Boat boatdb = boatRepository.save(boat);
@@ -65,9 +65,9 @@ public class BoatRepository {
     @Test
     @DisplayName("Listar por Boat by id")
     public void listarPorId(){
-        Boat newBoat = new Boat(12323414L,"velero",40L,"jenny","xr","true",20L);    
+        Boat newBoat = new Boat(123312323414L,"velero",40L,"jenny","xr","true",20L);    
         boatRepository.save(newBoat);
-        Boat boat = boatRepository.findById(12323414L).get();
+        Boat boat = boatRepository.findByTuition(123312323414L).get();
         assertNotNull(boat);
     }
 
@@ -83,31 +83,32 @@ public class BoatRepository {
     }
 
     @Test
-    @Rollback(false)
+    // interactua con la base de datos
+    // @Rollback(false)
     @DisplayName("Actualizar boat")
     public void actualizarBoat(){
-        // Boat newBoat = new Boat(111111111L,"velero",40L,"jenny","xr","true",20L);    
+        Boat newBoat = new Boat(111111111L,"velero",40L,"jenny","xr","true",20L);    
 
-        boatRepository.save(boatInit);
-        Boat boat = boatRepository.findById(boatInit.getTuition() ).get();
+        boatRepository.save(newBoat);
+        Boat boat = boatRepository.findByTuition(newBoat.getTuition() ).get();
         boat.setName("Roberto");
         boatRepository.save(boat);
-        Boat boatdb = boatRepository.findById(boatInit.getTuition()).get();
+        Boat boatdb = boatRepository.findByTuition(boatInit.getTuition()).get();
         assertEquals(boatdb.getName(),"Roberto");
     }
 
     @Test
-    @Rollback(false)
+    // @Rollback(false)
     @DisplayName("Eliminar boat")
     public void eliminarBoat(){
-        Boat newBoat = new Boat(22222222L,"velero",40L,"jenny","xr","true",20L);    
+        Boat newBoat = new Boat(2323234L,"velero",40L,"jenny","xr","true",20L);    
         boatRepository.save(newBoat);
-        boolean boat = boatRepository.findById(22222222L).isPresent();
+        boolean boat = boatRepository.findByTuition(2323234L).isPresent();
         if(!boat){
             fail();
         }
-        boatRepository.deleteById(22222222L);
-        boolean noExisteDespuesDeEliminar = boatRepository.findById(22222222L).isPresent();
+        boatRepository.deleteByTuition(2323234L);
+        boolean noExisteDespuesDeEliminar = boatRepository.findByTuition(2323234L).isPresent();
         
         assertTrue(boat);
         assertFalse(noExisteDespuesDeEliminar);

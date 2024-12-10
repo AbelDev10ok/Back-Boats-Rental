@@ -1,39 +1,34 @@
 package com.manager.boats.rental.boats_rental.web.controller.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.manager.boats.rental.boats_rental.persistence.models.Role;
 
 public class UserResponse {
-    private String name;
-    private String lastname;    
+    private Long id;
     private String email;
-    private String phoneNumber;
-    private String addres;
-
+    private List<Role> roles;
+    private boolean isEnabled;
+    
     public UserResponse() {
+        this.roles = new ArrayList<>();
     }
     
-    public UserResponse(String name, String lastname, String email, String phoneNumber, String addres) {
-        this.name = name;
-        this.lastname = lastname;
+    public UserResponse(String email, boolean isEnabled) {
         this.email = email;
-        this.phoneNumber = phoneNumber;
-        this.addres = addres;
+        this.roles = new ArrayList<>();
+        this.isEnabled = isEnabled;
     }
-
-    public String getName() {
-        return name;
+    
+    public Long getId() {
+        return id;
     }
-
-    public void setName(String name) {
-        this.name = name;
+    
+    public void setId(Long id) {
+        this.id = id;
     }
-
-    public String getLastname() {
-        return lastname;
-    }
-
-    public void setLastname(String lastname) {
-        this.lastname = lastname;
-    }
+    
 
     public String getEmail() {
         return email;
@@ -43,26 +38,25 @@ public class UserResponse {
         this.email = email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+    public List<Role> getRoles() {
+        return roles;
     }
 
-    public void setPhoneNumber(String phoneNumber) {
-        this.phoneNumber = phoneNumber;
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
     }
 
-    public String getAddres() {
-        return addres;
+    public boolean isEnabled() {
+        return isEnabled;
     }
 
-    public void setAddres(String addres) {
-        this.addres = addres;
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
     }
 
     @Override
     public String toString() {
-        return "UserResponse [name=" + name + ", lastname=" + lastname + ", email=" + email + ", phoneNumber="
-                + phoneNumber + ", addres=" + addres + "]";
+        return "UserResponse [id=" + id + ", email=" + email + ", roles=" + roles + ", isEnabled=" + isEnabled + "]";
     }
-
+    
 }
