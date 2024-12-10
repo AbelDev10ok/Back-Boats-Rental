@@ -4,7 +4,6 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .env
-!**src/test/
 
 
 ### STS ###
@@ -34,3 +33,9 @@ build/
 
 ### VS Code ###
 .vscode/
+# Exclusiones específicas para pruebas (ajusta según tu proyecto)
+# src/test/
+src/test/java/com/manager/boats/rental/boats_rental/controllers
+src/test/java/com/manager/boats/rental/boats_rental/services
+src/test/java/com/manager/boats/rental/boats_rental/repositories
+src/test/**/*.class
