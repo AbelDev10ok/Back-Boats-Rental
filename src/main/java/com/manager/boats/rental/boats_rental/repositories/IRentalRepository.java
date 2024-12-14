@@ -15,6 +15,7 @@ import com.manager.boats.rental.boats_rental.persistence.models.Rental;
 public interface IRentalRepository extends JpaRepository<Rental,Long>{
     Optional<Rental> findByUserId(Long id);
     Optional<Rental> findByConfirmationToken(String token);  //  El método ya define la consulta
+    List<Rental> findAllByUserId(Long id);
 
     @Query("SELECT r FROM Rental r WHERE r.boat = :boat AND " +
            "((:dateInit BETWEEN r.dateInit AND r.dateEnd) OR " + // Check if dateInit falls within existing rental
@@ -23,6 +24,9 @@ public interface IRentalRepository extends JpaRepository<Rental,Long>{
            "(r.dateEnd BETWEEN :dateInit AND :dateEnd))")        // Check if existing rental ends within new range    
     List<Rental> findRentalsByBoatAndDateRange(Boat boat, Date dateInit, Date dateEnd);
     
+    @Query("SELECT r FROM Rental r JOIN FETCH r.user u JOIN FETCH r.boat b") // <- Aquí el cambio
+    List<Rental> findAllWithUserAndBoat();
+
     // YA NO UTILIZO ... PERO ES UNA FORMA DE LLAMAR A UNA FUNCION
     // @Query(value = "SELECT encontrar_marinero_disponible(:fechaInicio, :fechaFin)", nativeQuery = true)
     // Long encontrarMarineroDisponible(@Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin);

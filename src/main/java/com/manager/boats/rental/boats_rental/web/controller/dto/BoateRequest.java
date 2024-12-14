@@ -1,23 +1,51 @@
 package com.manager.boats.rental.boats_rental.web.controller.dto;
 
-import java.util.List;
-
 import com.manager.boats.rental.boats_rental.persistence.models.BoatType;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
-public class BoatResponse {
+public class BoateRequest {
+    @NotNull(message = "Tuition is required")
     private Long tuition;
+
+    @NotNull(message = "Type is required")
     @Enumerated(EnumType.STRING)
     private BoatType type;
+
+    @NotNull(message = "Ability is required")
     private Long ability;
+    
+    @NotBlank(message = "Name is required")
     private String name;
+
+    @NotBlank(message = "Model is required")
     private String model;
+    
+    @NotNull(message = "Price hours is required")
+    @Min(value = 1, message = "Price hours must be greater than 0")
+    @Column(name="price_for_day")
     private Long priceHours;
 
-    private MarinResponse marin; // DTO para Marin
-    private List<RentalDto> rentals; // Lista de DTOs para Rentals
+    
+
+    public BoateRequest() {
+    }
+
+    
+    public BoateRequest(Long tuition, BoatType type, Long ability, String name, String model, Long priceHours) {
+        this.tuition = tuition;
+        this.type = type;
+        this.ability = ability;
+        this.name = name;
+        this.model = model;
+        this.priceHours = priceHours;
+    }
+
 
     public Long getTuition() {
         return tuition;
@@ -54,18 +82,6 @@ public class BoatResponse {
     }
     public void setPriceHours(Long priceHours) {
         this.priceHours = priceHours;
-    }
-    public MarinResponse getMarin() {
-        return marin;
-    }
-    public void setMarin(MarinResponse marin) {
-        this.marin = marin;
-    }
-    public List<RentalDto> getRentals() {
-        return rentals;
-    }
-    public void setRentals(List<RentalDto> rentals) {
-        this.rentals = rentals;
     }
 
     

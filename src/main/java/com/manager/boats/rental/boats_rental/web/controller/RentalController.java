@@ -1,5 +1,6 @@
 package com.manager.boats.rental.boats_rental.web.controller;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.slf4j.Logger;
@@ -13,7 +14,6 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -27,8 +27,15 @@ import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ExtractErrorMessage;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
 import com.manager.boats.rental.boats_rental.web.controller.dto.RentalDto;
+import com.manager.boats.rental.boats_rental.web.controller.dto.RentalResponse;
 
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
@@ -75,22 +82,27 @@ public class RentalController {
     }
     
     @GetMapping("/user")
+    @PreAuthorize("hasAnyRole('ROLE_ADMIN', 'ROLE_USER')")
     public ResponseEntity<ApiResponse> getRentaOfUser(@AuthenticationPrincipal Users user) {
         try {
-            Rental rental = rentalServices.getByUserId(user.getId());
-            return ResponseEntity.ok().body(new ApiResponse("get rental", rental));
+            List<RentalResponse> rentals = rentalServices.getByUserId(user.getId());
+            return ResponseEntity.ok().body(new ApiResponse("get rental", rentals));
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(new ApiResponse("error", "Rental not found for user " + user.getId()));
         } catch (JwtException e) {  // Capturar excepciones JWT
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ApiResponse("error", "Unauthorized"));
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("error", "Internal Server Error"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("error", e.getMessage()));
         }
     }
 
     @PutMapping("/update/{id}")
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")    
+    @Operation( 
+        summary = "Update date of rental",
+        description = "Admin updates date of rental."
+        )
     public ResponseEntity<ApiResponse> updateRental(@Valid @RequestBody RentalDto entity, BindingResult result ,@PathVariable Long id ) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
@@ -135,6 +147,10 @@ public class RentalController {
     }
 
     @PostMapping("/client/boatsId/{boatsId}")
+    @Operation( 
+        summary = "Save rental",
+        description = "Send email to user for confirmation."
+        )
     public ResponseEntity<ApiResponse> saveRental(
                 @Valid 
                 @RequestBody RentalDto entity, 
@@ -185,6 +201,11 @@ public class RentalController {
     }
     
     @GetMapping("/confirm/{token}")
+    @Operation( 
+        summary = "Confirm rental for user",
+        description = "confirm the rent through the url sent by email."
+        )
+    
     public ResponseEntity<ApiResponse> confirmRental(@PathVariable String token) {
         try {
             rentalServices.confirmRental(token);  // Implementa este método en tu servicio

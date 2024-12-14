@@ -21,6 +21,7 @@ import com.manager.boats.rental.boats_rental.repositories.IRentalRepository;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IBoatServices;
 import com.manager.boats.rental.boats_rental.web.controller.dto.BoatResponse;
+import com.manager.boats.rental.boats_rental.web.controller.dto.BoateRequest;
 import com.manager.boats.rental.boats_rental.web.controller.dto.MarinResponse;
 import com.manager.boats.rental.boats_rental.web.controller.dto.RentalDto;
 
@@ -156,7 +157,7 @@ public class BoatServices implements IBoatServices{
 
     @Transactional
     @Override
-    public void save(Boat boat) {
+    public void save(BoateRequest boat) {
         if (boatRepository.findByTuition(boat.getTuition()).isPresent()) {
             throw new RuntimeException("A boat with this tuition already exists.");
         }
@@ -175,7 +176,7 @@ public class BoatServices implements IBoatServices{
     
     @Transactional
     @Override
-    public void updateBoat(Boat boat, Long tuition) {
+    public void updateBoat(BoateRequest boat, Long tuition) {
             Optional<Boat> existingBoatOptional = boatRepository.findByTuition(tuition);
         
             if (existingBoatOptional.isPresent()) {

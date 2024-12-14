@@ -9,6 +9,7 @@ import com.manager.boats.rental.boats_rental.services.implementation.BoatService
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
 import com.manager.boats.rental.boats_rental.web.controller.dto.BoatResponse;
+import com.manager.boats.rental.boats_rental.web.controller.dto.BoateRequest;
 
 import jakarta.validation.Valid;
 
@@ -69,7 +70,7 @@ public class BoatController {
     
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PostMapping("/save")
-    public ResponseEntity<ApiResponse> saveboat(@Valid @RequestBody Boat entity, BindingResult result) {
+    public ResponseEntity<ApiResponse> saveboat(@Valid @RequestBody BoateRequest entity, BindingResult result) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
@@ -95,7 +96,7 @@ public class BoatController {
     
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @PutMapping("/{tuition}")
-    public ResponseEntity<ApiResponse> updateBoat(@Valid @RequestBody Boat entity,BindingResult result ,@PathVariable Long tuition) {
+    public ResponseEntity<ApiResponse> updateBoat(@Valid @RequestBody BoateRequest entity,BindingResult result ,@PathVariable Long tuition) {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }

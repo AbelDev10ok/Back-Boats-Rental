@@ -6,18 +6,18 @@ import com.manager.boats.rental.boats_rental.persistence.models.EstateRental;
 
 
 
+
 public class RentalResponse {
 
     private Long id;
     private Date dateInit;
     private Date dateEnd;
     private EstateRental state;//pend,conf,canc
-    private Long hours;
     private Long total;
 
-    private UserResponse user;
+    private String username;
 
-    private BoatDto boat;
+    private Long tuitionBoat;
 
     public RentalResponse() {
     }
@@ -54,14 +54,6 @@ public class RentalResponse {
         this.state = state;
     }
 
-    public Long getHours() {
-        return hours;
-    }
-
-    public void setHours(Long hours) {
-        this.hours = hours;
-    }
-
     public Long getTotal() {
         return total;
     }
@@ -69,22 +61,17 @@ public class RentalResponse {
     public void setTotal(Long total) {
         this.total = total;
     }
-
-    public UserResponse getUser() {
-        return user;
+    public String getUsername() {
+        return username;
     }
-
-    public void setUser(UserResponse user) {
-        this.user = user;
+    public void setUsername(String username) {
+        this.username = username;
     }
-
-    public BoatDto getBoat() {
-        return boat;
+    public Long getTuitionBoat() {
+        return tuitionBoat;
     }
-
-    public void setBoat(BoatDto boat) {
-        this.boat = boat;
+    public void setTuitionBoat(Long tuitionBoat) {
+        this.tuitionBoat = tuitionBoat;
     }
-
     
 }

@@ -10,7 +10,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import java.util.Set;
@@ -41,9 +40,9 @@ public class Users{
     // I could place from the bd in true but i do from prePersist 
     private boolean enabled;
 
-    @Transient
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    private boolean admin;
+    // @Transient
+    // @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    // private boolean admin;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",cascade = jakarta.persistence.CascadeType.ALL,orphanRemoval = true)
@@ -103,13 +102,6 @@ public class Users{
         this.rentals = rentals;
     }
 
-    public boolean isAdmin() {
-        return admin;
-    }
-
-    public void setAdmin(boolean admin) {
-        this.admin = admin;
-    }
 
     public List<Role> getRoles() {
         return roles;
@@ -129,8 +121,7 @@ public class Users{
 
     @Override
     public String toString() {
-        return "Users [id=" + id + ", email=" + email + ", password=" + password + ", enabled=" + enabled + ", admin="
-                + admin + ", rentals=" + rentals + ", roles=" + roles + "]";
+        return "Users [id=" + id + ", email=" + email + ", password=" + password + ", enabled=" + enabled + "]"; //  <- Elimina rentals y roles
     }
 
 }

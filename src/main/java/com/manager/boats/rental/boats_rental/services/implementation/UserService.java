@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.aspectj.weaver.ast.Not;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,6 +17,7 @@ import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 import com.manager.boats.rental.boats_rental.services.exception.AlreadyExistsException;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IUserServices;
+import com.manager.boats.rental.boats_rental.web.controller.dto.UserAuth;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserDtoEmail;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserResponse;
 
@@ -60,7 +60,7 @@ public class UserService implements IUserServices{
 
     @Transactional
     @Override
-    public void saveUser(Users user) {
+    public void saveUser(UserAuth user) {
         boolean exists = userRepository.existsByEmail(user.getEmail());
         if(exists){
             throw new AlreadyExistsException("email exists");
@@ -68,14 +68,16 @@ public class UserService implements IUserServices{
         Optional<Role> roleUser = roleRepository.findByName("ROLE_USER");   
         List<Role> roles = new ArrayList<>();
         roleUser.ifPresent(roles::add);
-        if(user.isAdmin()){
-            System.out.println(user.isAdmin());
-            Optional<Role> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
-            roleAdmin.ifPresent(roles::add);
-        }
-        user.setRoles(roles);
+        // if(user.isAdmin()){
+        //     System.out.println(user.isAdmin());
+        //     Optional<Role> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+        //     roleAdmin.ifPresent(roles::add);
+        // }
+        // user.setRoles(roles);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userRepository.save(user);
+        Users userDb = modelMapper.map(user, Users.class);
+        userDb.setRoles(roles);
+        userRepository.save(userDb);
     }
 
     @Transactional

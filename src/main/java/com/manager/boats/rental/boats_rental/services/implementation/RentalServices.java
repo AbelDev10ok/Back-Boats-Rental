@@ -25,10 +25,8 @@ import com.manager.boats.rental.boats_rental.repositories.IUserRepository;
 import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IRentalServices;
 import com.manager.boats.rental.boats_rental.web.controller.RentalController;
-import com.manager.boats.rental.boats_rental.web.controller.dto.BoatDto;
 import com.manager.boats.rental.boats_rental.web.controller.dto.RentalDto;
 import com.manager.boats.rental.boats_rental.web.controller.dto.RentalResponse;
-import com.manager.boats.rental.boats_rental.web.controller.dto.UserResponse;
 
 @Service
 public class RentalServices implements IRentalServices{
@@ -54,19 +52,22 @@ public class RentalServices implements IRentalServices{
         }
 
         Date today = new Date();
-        log.debug("Fecha hoy: ",today);
-        long diff = rental.getDateInit().getTime() - today.getTime();
+        log.debug("Fecha hoy: ",today.toString());
+        // long diff = rental.getDateInit().getTime() - today.getTime();
         log.debug("Fecha inicio renta : ",rental.getDateInit().getTime());
         log.debug("Fecha find de renta : ",rental.getDateInit().getTime());
-        long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
+        // long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
         log.debug("Fecha hoy: ",today);
         
-        //  verificamos si la renta comienza en el futuro
-        if (days >= 0) {
+        if (today.compareTo(rental.getDateInit()) < 0) { // today < rental.getDateInit()
+            long diff = rental.getDateInit().getTime() - today.getTime();
+            long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
             if (days < 2) {
                 throw new IllegalStateException("La renta solo se puede cancelar con 2 días de anticipación.");
             }
-        } 
+        } else {
+            throw new IllegalStateException("No se puede cancelar una renta que ya ha comenzado o finalizado.");
+        }
 
         if(rental.getState() == EstateRental.CANCELADO){
             throw new IllegalStateException("Rental already cancelled");
@@ -125,15 +126,15 @@ public class RentalServices implements IRentalServices{
     @Transactional(readOnly = true)
     @Override
     public List<RentalResponse> getAll() {
-        List<Rental> rentals = rentalRepository.findAll();
+        List<Rental> rentals = rentalRepository.findAllWithUserAndBoat();
         return rentals.stream()
                 .map(rental -> {
                     RentalResponse rentalDTO = modelMapper.map(rental, RentalResponse.class); // Mapeo básico
-                    BoatDto boatDTO = modelMapper.map(rental.getBoat(), BoatDto.class);
-                    rentalDTO.setBoat(boatDTO);
+                    Long tuition = rental.getBoat().getTuition();
+                    rentalDTO.setTuitionBoat(tuition);
 
-                    UserResponse userDTO = modelMapper.map(rental.getUser(), UserResponse.class);
-                    rentalDTO.setUser(userDTO);
+                    String username = rental.getUser().getEmail();
+                    rentalDTO.setUsername(username);
 
 
                     return rentalDTO;
@@ -143,8 +144,12 @@ public class RentalServices implements IRentalServices{
 
     @Transactional(readOnly = true)
     @Override
-    public Rental getByUserId(Long id) {
-        return rentalRepository.findByUserId(id).orElseThrow(()-> new NotFoundException("User not exists"));
+    public List<RentalResponse> getByUserId(Long id) {
+        userRepository.findById(id).orElseThrow(() -> new NotFoundException("User not found"));
+        
+        return rentalRepository.findAllByUserId(id).stream()
+                .map(rental -> modelMapper.map(rental, RentalResponse.class))
+                .toList();
     }
 
     @Transactional

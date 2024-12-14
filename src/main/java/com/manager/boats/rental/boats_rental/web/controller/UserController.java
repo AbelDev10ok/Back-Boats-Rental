@@ -26,6 +26,8 @@ import com.manager.boats.rental.boats_rental.util.ValidationEntities;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserDtoEmail;
 import com.manager.boats.rental.boats_rental.web.controller.dto.UserDtoPasword;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 
 
 @RestController 
@@ -93,6 +95,10 @@ public class UserController {
 
     @PutMapping("/{idUser}/enabled")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @Operation( 
+        summary = "Update user enabled status",
+        description = "Admin updates the enabled status of a user by their ID."
+        )
     public ResponseEntity<?> updateUserEnabledStatus(@PathVariable Long idUser, @RequestParam boolean enabled) {
         userServices.disableUser(idUser, enabled);
         return ResponseEntity.noContent().build();

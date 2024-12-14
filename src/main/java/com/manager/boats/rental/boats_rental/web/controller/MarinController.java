@@ -31,7 +31,7 @@ import org.springframework.validation.BindingResult;
 @RestController
 @RequestMapping("${api.base.path}/marins")
 @CrossOrigin(origins = "http://localhost:5173")
-@PreAuthorize("hasRole('ROLE_ADMIN')")
+// @PreAuthorize("hasRole('ROLE_ADMIN')")
 public class MarinController {
 
     @Autowired

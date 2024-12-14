@@ -52,6 +52,7 @@ public class SecurityConfig {
         return http.authorizeHttpRequests((auth) -> auth
                 .requestMatchers(HttpMethod.POST ,"/api/v1/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/v1/rentals/confirm/**").permitAll()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // Permite acceso a Swagger UI
 
                 .requestMatchers(HttpMethod.PUT ,"/api/v1/boats/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.DELETE ,"/api/v1/boats/**").hasRole("ADMIN")

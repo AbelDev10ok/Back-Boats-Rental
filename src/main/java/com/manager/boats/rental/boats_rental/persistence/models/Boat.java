@@ -14,7 +14,6 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 @Entity
@@ -22,27 +21,14 @@ import jakarta.validation.constraints.NotNull;
 public class Boat {
 
     @Id
-    // @GeneratedValue(strategy = GenerationType.IDENTITY)
-    // private Long id;
-
-    @NotNull(message = "Tuition is required")
     // @IExsitsBoatDb(message="Boat already exists") // gestiono que sea unico a nivel de api back
     @Column(unique = true)//gestiono que sea unico a nivel de base de datos
     private Long tuition;
-
-    @NotNull(message = "Type is required")
     @Enumerated(EnumType.STRING)
-    private BoatType type;
-    
-    @NotNull(message = "Ability is required")
+    private BoatType type;    
     private Long ability;
-
-    @NotBlank(message = "Name is required")
     private String name;
-
-    @NotBlank(message = "Model is required")
     private String model;
-    
     @Column(name = "enabled") // Nombre de la columna y valor por defecto
     private boolean enabled;
     
