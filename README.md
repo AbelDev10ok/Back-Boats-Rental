@@ -30,9 +30,9 @@ Crea una base de datos PostgreSQL local con el nombre boats_rentals.
 
 Conéctate a tu base de datos PostgreSQL usando cliente SQL como psql y ejecuta los siguientes scripts en el que estan dentro de src/main/resources  en el siguiente orden:
 
-# create_tables.sql
-# create_functions_triggers.sql
-# insert_data.sql
+### create_tables.sql
+### create_functions_triggers.sql
+### insert_data.sql
 
 Desde un cliente gráfico: Abre cada archivo .sql en tu cliente y ejecútalo.
 
