@@ -18,8 +18,6 @@ public class RentalDto {
     @Pattern(regexp = "\\d{4}-\\d{2}-\\d{2}",message="Format date invalid, yyyy-MM-dd")
     @JsonFormat(pattern = "yyyy-MM-dd")
     private String dateEnd;
-    @Min(1)
-    private Long hours;
     @Enumerated(EnumType.STRING)
     private EstateRental state;//pend,conf,canc
     @JsonIgnore
@@ -31,10 +29,9 @@ public class RentalDto {
 
     public RentalDto() {
     }
-    public RentalDto(String dateInit, String dateEnd, Long hours) {
+    public RentalDto(String dateInit, String dateEnd) {
         this.dateInit = dateInit;
         this.dateEnd = dateEnd;
-        this.hours = hours;
     }
     public String getDateInit() {
         return dateInit;
@@ -48,13 +45,6 @@ public class RentalDto {
     public void setDateEnd(String dateEnd) {
         this.dateEnd = dateEnd;
     }
-    public Long getHours() {
-        return hours;
-    }
-    public void setHours(Long hours) {
-        this.hours = hours;
-    }
-
 
     public String getConfirmationToken() {
         return confirmationToken;
