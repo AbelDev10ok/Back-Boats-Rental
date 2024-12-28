@@ -40,8 +40,6 @@ public class RentalServices implements IRentalServices{
     @Autowired
     private ModelMapper modelMapper;
 
-    private final Logger log = LoggerFactory.getLogger(RentalController.class);
-
     @Transactional
     public void cancelRental(Long id,Users user){
         Rental rental = rentalRepository.findById(id)
@@ -52,12 +50,6 @@ public class RentalServices implements IRentalServices{
         }
 
         Date today = new Date();
-        log.debug("Fecha hoy: ",today.toString());
-        // long diff = rental.getDateInit().getTime() - today.getTime();
-        log.debug("Fecha inicio renta : ",rental.getDateInit().getTime());
-        log.debug("Fecha find de renta : ",rental.getDateInit().getTime());
-        // long days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-        log.debug("Fecha hoy: ",today);
         
         if (today.compareTo(rental.getDateInit()) < 0) { // today < rental.getDateInit()
             long diff = rental.getDateInit().getTime() - today.getTime();

@@ -7,7 +7,6 @@ import com.manager.boats.rental.boats_rental.services.exception.IValidationMonth
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
 
 public class RentalDto {

@@ -4,7 +4,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.manager.boats.rental.boats_rental.persistence.models.Boat;
 import com.manager.boats.rental.boats_rental.services.implementation.BoatServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;

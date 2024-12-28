@@ -31,11 +31,6 @@ import com.manager.boats.rental.boats_rental.web.controller.dto.RentalResponse;
 
 import io.jsonwebtoken.JwtException;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.mail.MessagingException;
 import jakarta.validation.Valid;
 
@@ -124,11 +119,11 @@ public class RentalController {
         try { 
             rentalServices.cancelRental(id,user);
             return ResponseEntity.ok().body(new ApiResponse("success", "Rental cancelled")); 
+        }catch (IllegalStateException e) { // Para la excepción de cancelación fuera de plazo 
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("error", e.getMessage())); 
         } catch (NotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("error", e.getMessage())); 
-        } catch (IllegalStateException e) { // Para la excepción de cancelación fuera de plazo 
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ApiResponse("error", e.getMessage())); 
-        } catch (Exception e) { 
+        }catch (Exception e) { 
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse("error", "Failed to cancel rental")); 
         } 
     }

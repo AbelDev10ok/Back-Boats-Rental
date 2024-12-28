@@ -1,23 +1,23 @@
 package com.manager.boats.rental.boats_rental.util;
 
 public class ApiResponse {
-    private String messae;
+    private String message;
     private Object data;
 
     public ApiResponse() {
     }
 
-    public ApiResponse(String messae, Object data) {
-        this.messae = messae;
+    public ApiResponse(String message, Object data) {
+        this.message = message;
         this.data = data;
     }
 
-    public String getMessae() {
-        return messae;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMessae(String messae) {
-        this.messae = messae;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public Object getData() {
@@ -30,7 +30,7 @@ public class ApiResponse {
 
     @Override
     public String toString() {
-        return "ApiResponse [data=" + data + ", messae=" + messae + "]";
+        return "ApiResponse [data=" + data + ", message=" + message + "]";
     }
     
 }

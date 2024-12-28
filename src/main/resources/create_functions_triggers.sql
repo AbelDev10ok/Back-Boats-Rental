@@ -16,7 +16,7 @@ BEGIN
     SELECT 1 -- no importa lo que devuelva lo importante que que devuelva filas o no
     -- si devuelve al menos una fila significa que existe una renta y el barco no cumple las condiciones (no disponible)
     FROM rental r
-    WHERE r.boat_id = b.id    -- Assuming tuition is the boat_id. Change if different.
+    WHERE r.boat_id = b.tuition    -- Assuming tuition is the boat_id. Change if different.
     AND (
         (r.date_init BETWEEN start_date AND end_date) OR
         (r.date_end BETWEEN start_date AND end_date) OR
@@ -123,7 +123,7 @@ DECLARE
 BEGIN
     SELECT 1
     INTO rental_exists
-    FROM rental r  -- Agregar alias 'r'
+    FROM rental r
     WHERE r.boat_id = NEW.boat_id
         AND NEW.date_init < r.date_end   -- Lógica de comparación corregida
         AND NEW.date_end > r.date_init   -- Lógica de comparación corregida
