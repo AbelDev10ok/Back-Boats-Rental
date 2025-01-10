@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Marin;
+import com.manager.boats.rental.boats_rental.services.exception.NotFoundException;
 import com.manager.boats.rental.boats_rental.services.interfaces.IMarinServices;
 import com.manager.boats.rental.boats_rental.util.ApiResponse;
 import com.manager.boats.rental.boats_rental.util.ValidationEntities;
@@ -65,10 +66,16 @@ public class MarinController {
         if(result.hasFieldErrors()){
             return validationEntities.validation(result);
         }
-        
-        marinServices.saveMarin(entity);
-        Marin newMarin = marinServices.findByDni(entity.getDni());
-        return ResponseEntity.ok().body(new ApiResponse("create",newMarin));
+        try {
+            
+            marinServices.saveMarin(entity);
+            // Marin newMarin = marinServices.findByDni(entity.getDni());
+            return ResponseEntity.ok().body(new ApiResponse("create",entity));
+        }catch(NotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("errors",e.getMessage()));
+        }catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ApiResponse("errors",e.getMessage()));
+        }
     }
 
     @PutMapping("/{id}")

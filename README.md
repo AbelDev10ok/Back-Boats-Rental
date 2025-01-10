@@ -65,3 +65,17 @@ Accede a la aplicación en la URL que se muestre en la consola (generalmente htt
 
 http://localhost:8080/swagger-ui/index.html (Ajusta el puerto si es diferente)
 
+7. **Funcionalidad Adicional**
+
+# Creación Automática de Usuario Administrador:
+Al iniciar la aplicación, se crea automáticamente un usuario administrador con las siguientes credenciales:
+
+Email: admin@example.com
+Contraseña: adminpassword
+Este usuario tiene permisos de administrador y puede gestionar la aplicación.
+
+# Confirmación de Rentas por Email:
+Cuando se solicita una renta, esta se confirma a través de un correo electrónico que se envía al usuario. Asegúrate de configurar correctamente las credenciales de correo electrónico en las variables de entorno para que esta funcionalidad funcione.
+
+# Cancelación de Rentas
+Una renta solo se puede cancelar con al menos 2 días de anticipación. Si intentas cancelar una renta con menos de 2 días de anticipación, recibirás un mensaje de error indicando que la cancelación no es posible.

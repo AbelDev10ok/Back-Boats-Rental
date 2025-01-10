@@ -5,8 +5,11 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.manager.boats.rental.boats_rental.persistence.models.Boat;
 import com.manager.boats.rental.boats_rental.persistence.models.Rental;
@@ -26,6 +29,9 @@ public interface IRentalRepository extends JpaRepository<Rental,Long>{
     
     @Query("SELECT r FROM Rental r JOIN FETCH r.user u JOIN FETCH r.boat b") // <- Aquí el cambio
     List<Rental> findAllWithUserAndBoat();
+
+    @Query("SELECT r FROM Rental r WHERE r.boat IS NULL AND r.dateInit > CURRENT_DATE")
+    List<Rental> findAvailableRentalsForBoat(@Param("boatId") Long boatId);
 
     // YA NO UTILIZO ... PERO ES UNA FORMA DE LLAMAR A UNA FUNCION
     // @Query(value = "SELECT encontrar_marinero_disponible(:fechaInicio, :fechaFin)", nativeQuery = true)

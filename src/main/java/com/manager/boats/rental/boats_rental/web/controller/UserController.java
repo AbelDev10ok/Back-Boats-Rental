@@ -93,15 +93,15 @@ public class UserController {
         }
     }
 
-    @PutMapping("/{idUser}/enabled")
+    @PutMapping("/{email}/enabled")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @Operation( 
         summary = "Update user enabled status",
         description = "Admin updates the enabled status of a user by their ID."
         )
-    public ResponseEntity<?> updateUserEnabledStatus(@PathVariable Long idUser, @RequestParam boolean enabled) {
-        userServices.disableUser(idUser, enabled);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> updateUserEnabledStatus(@PathVariable String email, @RequestParam boolean enabled) {
+        userServices.disableUser(email, enabled);
+        return ResponseEntity.ok().body(new ApiResponse("update",null));
     }
   
 }

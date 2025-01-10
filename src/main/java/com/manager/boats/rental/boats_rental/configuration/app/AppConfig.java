@@ -66,10 +66,10 @@ public class AppConfig {
 
     @PostConstruct
     public void init() {
-        if (userRepository.findByEmail("defaultuser@example.com").isEmpty()) {
+        if (userRepository.findByEmail("admin@example.com").isEmpty()) {
             Users user = new Users();
-            user.setEmail("defaultuser@example.com");
-            user.setPassword(passwordEncoder.encode("defaultpassword"));
+            user.setEmail("admin@example.com");
+            user.setPassword(passwordEncoder.encode("adminpassword"));
 
             List<Role> roles = new  ArrayList<>();
             roles.add(roleRepository.findByName("ROLE_USER").orElseThrow(() -> new RuntimeException("Role not found")));

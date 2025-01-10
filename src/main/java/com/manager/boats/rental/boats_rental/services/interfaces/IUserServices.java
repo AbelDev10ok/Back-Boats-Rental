@@ -14,7 +14,7 @@ public interface IUserServices {
     void deleteUserById(Long id);
     void updateUser(Users usersdto,Long id);
     boolean existsUser(String email);
-    void disableUser(Long id, boolean enabled) ;
+    void disableUser(String email, boolean enabled) ;
     Users findByEmail(String email);
     Users updateUserEmail(UserDtoEmail user, Long id);
     Users updateUserPassword(Long id, String newPassword);

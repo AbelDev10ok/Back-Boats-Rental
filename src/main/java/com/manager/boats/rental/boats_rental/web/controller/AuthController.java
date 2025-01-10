@@ -74,6 +74,10 @@ public class AuthController {
             Users user = userRepository.findByEmail(email)
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
+            if (!user.getEnabled()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ApiResponse("error", "Usuario deshabilitado"));
+            }
+    
 
             String token = jwtUtil.generateToken(user);
 

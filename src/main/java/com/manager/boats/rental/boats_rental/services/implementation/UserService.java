@@ -130,8 +130,8 @@ public class UserService implements IUserServices{
     }
 
     @Transactional
-    public void disableUser(Long id, boolean enabled) {
-        Optional<Users> userOptional = userRepository.findById(id);
+    public void disableUser(String email, boolean enabled) {
+        Optional<Users> userOptional = userRepository.findByEmail(email);
         if (userOptional.isPresent()) {
             Users user = userOptional.get();
             user.setEnabled(enabled);

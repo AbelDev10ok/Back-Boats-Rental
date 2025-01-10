@@ -71,6 +71,10 @@ public class MarinServices implements IMarinServices {
     @Transactional
     @Override
     public void saveMarin(Marin marin) {
+        Marin marinDb = marinRepository.findByDni(marin.getDni());
+        if(marinDb != null){
+            throw new NotFoundException("Marin already exists");
+        }
         
         marinRepository.save(marin);
     }
